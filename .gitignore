@@ -1,0 +1,13 @@
+.DS_STORE
+out
+*.DS_STORE
+*.out
+.test/
+test/
+*.tgz
+.template
+secrets.yaml
+.env
+.scratch/
+secret.json
+!bigpeer-anywhere-0.0.1.tgz

@@ -1,0 +1,33 @@
+dependencies:
+- name: hades
+  repository: oci://quay.io/ditto-external
+  version: 1.39.0
+- name: hydra-consul
+  repository: oci://quay.io/ditto-external
+  version: 0.1.0
+- name: hydra-store
+  repository: oci://quay.io/ditto-external
+  version: 1.39.0
+- name: hydra-subscription
+  repository: oci://quay.io/ditto-external
+  version: 1.39.0
+- name: service-token-validator
+  repository: oci://quay.io/ditto-external
+  version: 0.1.1
+- name: cert-manager
+  repository: https://charts.jetstack.io
+  version: v1.10.1
+- name: strimzi-kafka-operator
+  repository: https://strimzi.io/charts
+  version: 0.34.0
+- name: kafka
+  repository: oci://quay.io/ditto-external
+  version: 0.2.1
+- name: dummy-auth-webhook
+  repository: oci://quay.io/ditto-external
+  version: 0.1.1
+- name: bpam
+  repository: oci://quay.io/ditto-external
+  version: 1.0.2
+digest: sha256:c901e8e709f7623e3b84235877e1194d085d96e4ea2d96798105e50633f0c13b
+generated: "2024-09-26T18:04:43.752084803-05:00"
