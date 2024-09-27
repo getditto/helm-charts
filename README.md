@@ -28,3 +28,8 @@ which can be modified to suit your needs, install the chart:
   helm install ditto-bp ditto/big-peer -f values.yaml
 ```
 
+This above command will install the Big Peer chart with the release name `ditto-bp`.
+
+For ingress to work, you will need to have a working ingress controller in your cluster.
+and then you can create an ingress resource that points to the k8s service in your install called
+ditto-bp-hydra-subscription and map to port `8080`.
