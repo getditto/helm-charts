@@ -33,3 +33,12 @@ This above command will install the Big Peer chart with the release name `ditto-
 For ingress to work, you will need to have a working ingress controller in your cluster.
 and then you can create an ingress resource that points to the k8s service in your install called
 ditto-bp-hydra-subscription and map to port `8080`.
+
+### Notes on dependencies
+
+The `big-peer` chart has a few third-party dependencies that we include in the chart for ease of use and to ensure compatibility. but if you have these dependencies already installed in your cluster, you can disable the installation of these dependencies by setting the `enable` values to `false` in the values file for the respective dependency.
+
+By default the following dependencies are enabled:
+
+- [Strimzi Kafka Operator](https://strimzi.io/)
+- [Cert Manager](https://github.com/cert-manager/cert-manager)
