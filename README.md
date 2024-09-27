@@ -51,3 +51,63 @@ By default the following dependencies are enabled:
 
 - [Strimzi Kafka Operator](https://strimzi.io/)
 - [Cert Manager](https://github.com/cert-manager/cert-manager)
+
+### Connecting to a Big Peer on my laptop
+
+In order to connect to a Big Peer running on your laptop, you will need to expose the service to the host machine. via the above method of port forwarding.
+
+Next in your small peer client you will need to change a few configuration items to connect to the Big Peer running on your laptop.
+these examples are in kotlin for Android but should work similarly for other platforms.
+
+In your Ditto object you will need to setup an identity that looks like this.
+```kotlin
+ OnlineWithAuthentication(
+    dependencies = androidDependencies,
+    appId = Constants.onlineAppId,
+    customAuthUrl = "http://10.0.2.2:8080",
+    enableDittoCloudSync = true,
+    callback = AuthCallback(),
+    //10.0.2.2 is the localhost for the Android emulator
+),
+```
+
+Next you will need to create an AuthCallback class that looks like this:
+
+```kotlin
+class AuthCallback: DittoAuthenticationCallback {
+    override fun authenticationRequired(authenticator: DittoAuthenticator) {
+        println("Login request.")
+        authenticator.login("full_access", "dummy-provider", { token, error ->
+            if (error != null) {
+              println("Login failed.")
+            } else {
+              println("Login successful.")
+            }
+        })
+    }
+
+    override fun authenticationExpiringSoon(
+        authenticator: DittoAuthenticator,
+        secondsRemaining: Long
+    ) {
+        println("Auth token expiring in $secondsRemaining seconds")
+    }
+}
+```
+
+you will also need to setup the DittoTransportConfig to have a custom URL for the Big Peer.
+
+```kotlin
+val conf = DittoTransportConfig()
+conf.connect.websocketUrls.add("ws://localhost:8080/")
+
+ditto?.let { ditto ->
+    ditto.transportConfig = conf
+    ditto.startSync()
+}
+
+```
+
+### Big Peer to Big Peer communication
+
+If you have multiple Big Peers running in your cluster, you can enable Big Peer to Big Peer communication by adding the following items to your values files on one of the Big Peers:
