@@ -30,9 +30,18 @@ which can be modified to suit your needs, install the chart:
 
 This above command will install the Big Peer chart with the release name `ditto-bp`.
 
+### Ingress
+
 For ingress to work, you will need to have a working ingress controller in your cluster.
 and then you can create an ingress resource that points to the k8s service in your install called
 ditto-bp-hydra-subscription and map to port `8080`.
+
+If you are deploying to something like Kubernetes for Docker Desktop, you will have to port-forward port 8080 from the 
+ditto-bp-hydra-subscription service to your local machine.
+```bash
+  kubectl port-forward svc/ditto-bp-hydra-subscription 8080
+```
+
 
 ### Notes on dependencies
 
