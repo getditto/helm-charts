@@ -108,6 +108,3 @@ ditto?.let { ditto ->
 
 ```
 
-### Big Peer to Big Peer communication
-
-If you have multiple Big Peers running in your cluster, you can enable Big Peer to Big Peer communication by adding the following items to your values files on one of the Big Peers:
