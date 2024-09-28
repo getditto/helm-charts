@@ -47,6 +47,62 @@ global:
   tolerations: []
   affinity: {}
 
+# -- Configure the ingresses for the chart here.
+# Additional ingresses can be added by adding a dictionary key similar to the 'main' ingress.
+# @default -- See below
+ingress:
+  main:
+    # -- Enables or disables the ingress
+    enabled: false
+
+    # -- Make this the primary ingress (used in probes, notes, etc...).
+    # If there is more than 1 ingress, make sure that only 1 ingress is marked as primary.
+    primary: true
+
+    # -- Override the name suffix that is used for this ingress.
+    nameOverride:
+
+    # -- Provide additional annotations which may be required.
+    annotations: {}
+      # kubernetes.io/ingress.class: traefik
+      # kubernetes.io/tls-acme: "true"
+
+    # -- Provide additional labels which may be required.
+    labels: {}
+
+    # -- Set the ingressClass that is used for this ingress.
+    # Requires Kubernetes >=1.19
+    ingressClassName:  # "traefik"
+
+    ## Configure the hosts for the ingress
+    hosts:
+      -  # -- Host address. Helm template can be passed.
+        host: chart-example.local
+        ## Configure the paths for the host
+        paths:
+          -  # -- path.  helm template can be passed.
+            path: /_ditto
+            # -- ignored if not kubeversion >= 1.14-0
+            pathtype: prefix
+            service:
+              # -- overrides the service name reference for this path
+              name: ditto-bp-hydra-subscription
+              # -- overrides the service port reference for this path
+              port: 8080
+
+          -  # -- path.  helm template can be passed.
+            path: /
+            # -- ignored if not kubeversion >= 1.14-0
+            pathtype: prefix
+            service:
+              # -- overrides the service name reference for this path
+              name: ditto-bp-hydra-subscription
+              # -- overrides the service port reference for this path
+              port: 10080
+
+    # -- Configure TLS for the ingress. Both secretName and hosts can process a Helm template.
+    tls: []
+
 ########################################################################
 # Hades Default Values
 # Custom Resource Definitions
