@@ -591,6 +591,9 @@ hydra-subscription:
       create: true
       name: selfsigned-issuer
 
+  networkPolicies:
+    enabled: false
+
   # -- the configuration of the statefulset for the http api server
   apiServer:
     enabled: true
