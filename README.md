@@ -15,8 +15,8 @@ We will then need to install some CRDs that are required for the Big Peer to run
 
 ```bash
   kubectl apply --server-side --force-conflicts -f https://github.com/cert-manager/cert-manager/releases/download/v1.6.1/cert-manager.crds.yaml
-  kubectl apply --server-side -f https://raw.githubusercontent.com/getditto/helm-charts/main/crds/ditto_v1alpha1_bigpeer_crd.yaml
-  kubectl apply --server-side -f https://raw.githubusercontent.com/getditto/helm-charts/main/crds/ditto_v1alpha1_ditto_crd.yaml
+  kubectl apply --server-side -f https://raw.githubusercontent.com/getditto/helm-charts/refs/heads/main/charts/big-peer/crds/ditto_v1alpha3_hydracluster_crd.yaml
+  kubectl apply --server-side -f https://raw.githubusercontent.com/getditto/helm-charts/refs/heads/main/charts/big-peer/crds/ditto_v1alpha3_hydrapartition_crd.yaml
 
 ```
 
