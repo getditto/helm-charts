@@ -1,0 +1,192 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: registryapps.cloud.app.ditto.live
+spec:
+  group: cloud.app.ditto.live
+  names:
+    categories: []
+    kind: RegistryApp
+    plural: registryapps
+    shortNames: []
+    singular: registryapp
+  scope: Cluster
+  versions:
+    - additionalPrinterColumns:
+        - description: The name of the HydraCluster
+          jsonPath: ".spec.hydraClusterRef.name"
+          name: HydraCluster
+          type: string
+        - description: The namespace of the HydraCluster
+          jsonPath: ".spec.hydraClusterRef.namespace"
+          name: HydraClusterNS
+          type: string
+        - description: The name of the CDCKafka cluster
+          jsonPath: ".spec.cdcKafkaClusterRef.name"
+          name: CDCKafka
+          type: string
+        - description: The namespace of the CDCKafka cluster
+          jsonPath: ".spec.cdcKafkaClusterRef.namespace"
+          name: CDCKafkaNS
+          type: string
+        - jsonPath: ".metadata.creationTimestamp"
+          name: Age
+          type: date
+      name: v1alpha2
+      schema:
+        openAPIV3Schema:
+          description: "Auto-generated derived type for RegistryAppSpec via `CustomResource`"
+          properties:
+            spec:
+              properties:
+                appId:
+                  description: "A stable, unique identifier for this [`RegistryApp`]"
+                  type: string
+                cdcKafkaClusterRef:
+                  description: "Kubernetes ref to the `Kafka` object where this app stores data"
+                  properties:
+                    name:
+                      description: "Name of the `Kafka` CR object"
+                      type: string
+                    namespace:
+                      description: "Namespace where the `Kafka` CR is located"
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                description:
+                  description: Optional description of this app
+                  nullable: true
+                  type: string
+                httpApiServerPoolRef:
+                  description: "Kubernetes ref to the `HttpApiServerPool` this app is assigned to"
+                  nullable: true
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                hydraClusterRef:
+                  description: "Kubernetes ref to the `HydraCluster` this app lives in"
+                  properties:
+                    name:
+                      description: "Name of the `HydraCluster` CR object"
+                      type: string
+                    namespace:
+                      description: "Namespace where the `HydraCluster` CR is located"
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                ingressDomains:
+                  additionalProperties:
+                    properties:
+                      httpEnabled:
+                        type: boolean
+                      wsEnabled:
+                        type: boolean
+                    required:
+                      - httpEnabled
+                      - wsEnabled
+                    type: object
+                  default: {}
+                  description: Kubernetes refs to ingresses targeting this app
+                  type: object
+                name:
+                  description: User-readable name for this app
+                  type: string
+                organizationUrl:
+                  description: URL to the organization that owns this app
+                  type: string
+                slug:
+                  description: "URL to open the Portal to this app's management page"
+                  type: string
+                subscriptionPoolRef:
+                  description: "Kubernetes ref to the `SubscriptionPool` this app is assigned to"
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                url:
+                  description: URL to reach this app from the public internet
+                  type: string
+              required:
+                - appId
+                - cdcKafkaClusterRef
+                - hydraClusterRef
+                - name
+                - organizationUrl
+                - slug
+                - subscriptionPoolRef
+                - url
+              type: object
+            status:
+              nullable: true
+              properties:
+                changeDataCaptureStatus:
+                  default: {}
+                  properties:
+                    actualCount:
+                      format: int16
+                      nullable: true
+                      type: integer
+                    desiredCount:
+                      format: int16
+                      nullable: true
+                      type: integer
+                    state:
+                      enum:
+                        - ERROR
+                        - REQUESTED
+                        - READY
+                      nullable: true
+                      type: string
+                  type: object
+                ingressDomainStatus:
+                  additionalProperties:
+                    properties:
+                      http:
+                        enum:
+                          - ERROR
+                          - CREATED
+                          - READY
+                        nullable: true
+                        type: string
+                      observedStatus:
+                        enum:
+                          - ERROR
+                          - CREATED
+                          - READY
+                        nullable: true
+                        type: string
+                      webSocket:
+                        enum:
+                          - ERROR
+                          - CREATED
+                          - READY
+                        nullable: true
+                        type: string
+                    type: object
+                  default: {}
+                  type: object
+              type: object
+          required:
+            - spec
+          title: RegistryApp
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
