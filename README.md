@@ -61,6 +61,10 @@ By default the following dependencies are enabled:
 - [Strimzi Kafka Operator](https://strimzi.io/)
 - [Cert Manager](https://github.com/cert-manager/cert-manager)
 
+### Big Peer in Production
+
+Coming Soon...
+
 ### Connecting to a Big Peer with a small peer
 
 If you are deploying to something like Kubernetes for Docker Desktop, you will have to port-forward port 8080 from the 
