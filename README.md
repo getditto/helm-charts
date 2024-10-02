@@ -128,7 +128,7 @@ ditto?.let { ditto ->
 
 ### Big Peer to Big Peer communication
 
-If you have two Big Peers running on your laptop and you want them to communicate with each other,
+With Two separate installations of the big peer helm chart in separate namespaces you can set them up to communicate with each other,
 you will need to setup a few things.
 
 You will have to know the "App ID" you intend to operator under. 
