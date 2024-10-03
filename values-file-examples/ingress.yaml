@@ -1,0 +1,146 @@
+######################################
+# Ingress Nginx
+# More Information see https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/values.yaml
+#####################################
+ingress-nginx:
+  enabled: true
+  namespaceOverride: ingress
+  controller:
+    service:
+      # -- Enable controller services or not. This does not influence the creation of either the admission webhook or the metrics service.
+      enabled: true
+      external:
+        # -- Enable the external controller service or not. Useful for internal-only deployments.
+        enabled: true
+        # -- Annotations to be added to the external controller service. See `controller.service.internal.annotations` for annotations to be added to the internal controller service.
+        annotations: {}
+      # annotations:
+      #   service.beta.kubernetes.io/aws-load-balancer-proxy-protocol: "*"
+      #   service.beta.kubernetes.io/aws-load-balancer-type: "external"
+      #   service.beta.kubernetes.io/aws-load-balancer-nlb-target-type: "ip"
+      #   service.beta.kubernetes.io/aws-load-balancer-scheme: internet-facing
+      #   service.beta.kubernetes.io/aws-load-balancer-backend-protocol: tcp
+      # -- Labels to be added to both controller services.
+      labels: {}
+      # -- Type of the external controller service. C
+      # Ref: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
+      type: Loadbalancer
+      # type: ClusterIP
+    readinessProbe:
+      initialDelaySeconds: 15
+      periodSeconds: 15
+    ingressClassResource:
+      name: ditto-umbrella-chart-nginx
+      enabled: true
+    config:
+      use-forwarded-headers: "true"
+      large-client-header-buffers: "16 32k" #TODO: clean this up once it's confirmed it was only done for public
+    extraArgs:
+      sync-rate-limit: "0.03" # only sync config once every 30 seconds to avoid DOS on reload (the upstream default is 1 every 3 seconds)
+    replicaCount: 2
+    resources:
+      limits:
+        cpu: 2
+        memory: 2.5Gi
+      requests:
+        cpu: 1
+        memory: 512Mi
+    autoscaling:
+      enabled: true
+      minReplicas: 2
+      maxReplicas: 20
+      targetCPUUtilizationPercentage: 70
+      targetMemoryUtilizationPercentage: null
+
+    autoscalingTemplate: []
+    # Custom or additional autoscaling metrics
+    # ref: https://kubernetes.io/docs/tasks/run-application/horizontal-pod-autoscale/#support-for-custom-metrics
+    # - type: Pods
+    #   pods:
+    #     metric:
+    #       name: nginx_ingress_controller_nginx_process_requests_total
+    #     target:
+    #       type: AverageValue
+    #       averageValue: 10000m
+    metrics:
+      enabled: true
+      serviceMonitor:
+        enabled: true
+      prometheusRule:
+        enabled: false # TODO: fix this
+        rules:
+          - alert: NGINXConfigFailed
+            expr: count(nginx_ingress_controller_config_last_reload_successful == 0) > 0
+            for: 1s
+            labels:
+              severity: critical
+            annotations:
+              description: bad ingress config - nginx config test failed
+              summary: uninstall the latest ingress changes to allow config reloads to resume
+          - alert: NGINXCertificateExpiry
+            expr: (avg(nginx_ingress_controller_ssl_expire_time_seconds) by (host) - time()) < 604800
+            for: 1s
+            labels:
+              severity: critical
+            annotations:
+              description: ssl certificate(s) will expire in less then a week
+              summary: renew expiring certificates to avoid downtime
+          - alert: NGINXTooMany500s
+            expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"5.+"} ) / sum(nginx_ingress_controller_requests) ) > 5
+            for: 1m
+            labels:
+              severity: warning
+            annotations:
+              description: Too many 5XXs
+              summary: More than 5% of all requests returned 5XX, this requires your attention
+          - alert: NGINXTooMany400s
+            expr: 100 * ( sum( nginx_ingress_controller_requests{status=~"4.+"} ) / sum(nginx_ingress_controller_requests) ) > 5
+            for: 1m
+            labels:
+              severity: warning
+            annotations:
+              description: Too many 4XXs
+              summary: More than 5% of all requests returned 4XX, this requires your attention
+    podLabels:
+      app.ditto.live/service-group: "ingress"
+      app.ditto.live/exposed: "true"
+      app.ditto.live/repo: "cloud-infra"
+      app.ditto.live/tier: "ingress"
+    # nodeSelector:
+    #   app.ditto.live/tier: "ingress"
+    affinity:
+      podAntiAffinity:
+        preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 100
+            podAffinityTerm:
+              labelSelector:
+                matchExpressions:
+                  - key: app.kubernetes.io/name
+                    operator: In
+                    values:
+                      - ingress-nginx
+                  - key: app.kubernetes.io/instance
+                    operator: In
+                    values:
+                      - ingress-nginx
+                  - key: app.kubernetes.io/component
+                    operator: In
+                    values:
+                      - controller
+              topologyKey: kubernetes.io/hostname
+
+  podSecurityPolicy:
+    enabled: false
+
+  defaultBackend:
+    enabled: true
+    # nodeSelector:
+    #   app.ditto.live/tier: "ingress"
+    replicas: 2
+    resources:
+      limits:
+        cpu: 10m
+        memory: 20Mi
+      requests:
+        cpu: 10m
+        memory: 20Mi

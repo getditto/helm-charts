@@ -61,9 +61,122 @@ By default the following dependencies are enabled:
 - [Strimzi Kafka Operator](https://strimzi.io/)
 - [Cert Manager](https://github.com/cert-manager/cert-manager)
 
+
+
+### Deploy in EKS Cluster
+
+To deploy the Big Peer into a AWS EKS Cluster like EKS you will need to perform the following actions;
+
+#### EKS Cluster Setup Checks
+
+- Create the [EKSClusterRole](https://docs.aws.amazon.com/eks/latest/userguide/cluster-iam-role.html#create-service-role)
+
+
+- Install [eksctl](https://eksctl.io/installation/)
+
+- Deploy EKS cluster with eksctl command
+
+<br/>
+
+```shell
+eksctl create cluster --name <cluster-name> --region <aws-region> --profile <aws-profile>
+```
+<br/>
+
+- Once the cluster is up and running verify that you have [ebs-csi-driver](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html#managing-ebs-csi) running in the `kube-system` namespace. This ensures that you have the provisioner that will dynamicallly create the Persistent Volumes that the hydra-store and kafka zookeeper nodes will need.
+
+<br/>
+
+- If your default storageClass is not set as the the default storageClass you can do that by adding the line below to the annotations.
+
+```yaml
+  storageclass.kubernetes.io/is-default-class: "true"
+```
+
+<br/>
+
+- Install and Configure and [ingress controller](https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/README.md)(***We recommend ingress-nginx***) or [AWS LoadBalancer Controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller). 
+
+- Make sure you have access to the required registry to pull images from the helm chart. This can be done by create a secret that has the registry username,email and password/token.
+
+<br/>
+
+#### Helm Chart Ingress Config 
+
+- In order to be able to access the big peer externally you need to configure the ingress in the values.yaml with a valid host name. To do this you will need to create a **CNAME** record that points to the loadbalancer created in the ingress service that has the type `LoadBalancer`.
+
+- Then in your values.yaml file you will need to enable the ingress and update the `host` value with the hostname you created as shown below;
+
+```yaml
+ingress:
+  main:
+    # -- Enables or disables the ingress
+    enabled: true
+
+    # -- Make this the primary ingress (used in probes, notes, etc...).
+    # If there is more than 1 ingress, make sure that only 1 ingress is marked as primary.
+    primary: true
+
+    # -- Override the name suffix that is used for this ingress.
+    nameOverride:
+
+    # -- Provide additional annotations which may be required.
+    annotations:
+      {}
+      # kubernetes.io/ingress.class: traefik
+      # kubernetes.io/tls-acme: "true"
+
+    # -- Provide additional labels which may be required.
+    labels: {}
+
+    # -- Set the ingressClass that is used for this ingress.
+    # Requires Kubernetes >=1.19
+    ingressClassName: nginx # "traefik"
+
+    ## Configure the hosts for the ingress
+    hosts:
+      - # -- Host address. Helm template can be passed.
+        host: eks.ditto-umbrella.live
+        ## Configure the paths for the host
+```
+
+This will create an ingress pointing to the ingress-controller's loadbalancer. See the full values file in [here](./values/eks-values.yaml)
+
+<br/>
+
+#### TLS Configuration
+
+- To ensure that the ingress created has tls configured you will need to create a secret that holds the values of a third party signed valid certificate and key. To create the secret run the command as shown below;
+
+
+```shell
+kubectl create secret tls ditto-bp-tls-secret --cert certificate.pem --key private-key.pem -n ditto-apps
+```
+
+- Once the secret is created reference it in the values.yaml file as shown below;
+
+```yaml
+    # -- Configure TLS for the ingress. Both secretName and hosts can process a Helm template.
+  tls:
+    - hosts:
+      - eks.ditto-umbrella.live
+      secretName: ditto-bp-tls-secret
+```
+
+This will ensure that when the ingress is created it references the certificate we saved as a secret.
+
+
+- The final step will be to then deploy the helm chart using the commands above.
+
+<br/>
+<br/>
+
 ### Big Peer in Production
 
 Coming Soon...
+
+
+
 
 ### Connecting to a Big Peer with a small peer
 
