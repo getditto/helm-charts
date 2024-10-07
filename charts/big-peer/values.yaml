@@ -63,7 +63,8 @@ ingress:
     nameOverride:
 
     # -- Provide additional annotations which may be required.
-    annotations: {}
+    annotations:
+      {}
       # kubernetes.io/ingress.class: traefik
       # kubernetes.io/tls-acme: "true"
 
@@ -72,15 +73,15 @@ ingress:
 
     # -- Set the ingressClass that is used for this ingress.
     # Requires Kubernetes >=1.19
-    ingressClassName:  # "traefik"
+    ingressClassName: alb # "traefik"
 
     ## Configure the hosts for the ingress
     hosts:
-      -  # -- Host address. Helm template can be passed.
+      - # -- Host address. Helm template can be passed.
         host: chart-example.local
         ## Configure the paths for the host
         paths:
-          -  # -- path.  helm template can be passed.
+          - # -- path.  helm template can be passed.
             path: /_ditto
             # -- ignored if not kubeversion >= 1.14-0
             pathtype: prefix
@@ -90,7 +91,7 @@ ingress:
               # -- overrides the service port reference for this path
               port: 8080
 
-          -  # -- path.  helm template can be passed.
+          - # -- path.  helm template can be passed.
             path: /
             # -- ignored if not kubeversion >= 1.14-0
             pathtype: prefix
@@ -183,7 +184,8 @@ hades:
     type: ClusterIP
     port: 80
 
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -194,7 +196,7 @@ hades:
     # requests:
     #   cpu: 100m
     #   memory: 128Mi
-  
+
 ###################################################################
 # Hydra Consul Default Values
 # For more information see consul helm chart link
@@ -309,7 +311,8 @@ hydra-store:
 
   podLabels: {}
 
-  podSecurityContext: {}
+  podSecurityContext:
+    {}
     # fsGroup: 2000
 
   securityContext:
@@ -333,7 +336,8 @@ hydra-store:
   additionalEnv:
     TRACING_FORMAT: json
 
-  resources: {}
+  resources:
+    {}
     # We usually recommend not to specify default resources and to leave this as a conscious
     # choice for the user. This also increases chances charts run on environments with little
     # resources, such as Minikube. If you do want to specify resources, uncomment the following
@@ -563,27 +567,25 @@ hydra-subscription:
 
   globalAuthConfig:
     # globalAuthConfig.providers -- object containing a list of global default auth providers.  These providers will be available to every app and can not be disabled.
-    "providers": {
-      "dummy-provider": {
-        "type": "tokenWebhook",
-        "webhookUrl": "http://ditto-bp-dummy-auth-webhook/validate_token"
-      },
-      "__playgroundProvider": {
-        "type": "anonymous",
-        "sessionLength": 630000,
-        "sharedToken": "test",
-        "permission": {
-          "read": {
-            "everything": true,
-            "queriesByCollection": {}
+    "providers":
+      {
+        "dummy-provider":
+          {
+            "type": "tokenWebhook",
+            "webhookUrl": "http://ditto-bp-dummy-auth-webhook/validate_token",
           },
-          "write": {
-            "everything": true,
-            "queriesByCollection": {}
-          }
-        }
+        "__playgroundProvider":
+          {
+            "type": "anonymous",
+            "sessionLength": 630000,
+            "sharedToken": "test",
+            "permission":
+              {
+                "read": { "everything": true, "queriesByCollection": {} },
+                "write": { "everything": true, "queriesByCollection": {} },
+              },
+          },
       }
-    }
 
   certManager:
     enabled: true

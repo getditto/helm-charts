@@ -129,7 +129,7 @@ ingress:
 
     # -- Set the ingressClass that is used for this ingress.
     # Requires Kubernetes >=1.19
-    ingressClassName: nginx # "traefik"
+    ingressClassName: alb # "traefik"
 
     ## Configure the hosts for the ingress
     hosts:
