@@ -67,8 +67,6 @@ By default the following dependencies are enabled:
 
 To deploy the Big Peer into a AWS EKS Cluster like EKS you will need to perform the following actions;
 
-#### EKS Cluster Setup Checks
-
 - Create the [EKSClusterRole](https://docs.aws.amazon.com/eks/latest/userguide/cluster-iam-role.html#create-service-role)
 
 
@@ -95,7 +93,7 @@ eksctl create cluster --name <cluster-name> --region <aws-region> --profile <aws
 
 <br/>
 
-- Install and Configure and [ingress controller](https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/README.md)(***We recommend ingress-nginx***) or [AWS LoadBalancer Controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller). 
+- Install and Configure and [ingress controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller) like [AWS LoadBalancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/) or [Ingress Nginx](https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/README.md). Any Ingress Controller will work fine 
 
 - Make sure you have access to the required registry to pull images from the helm chart. This can be done by create a secret that has the registry username,email and password/token.
 
@@ -144,32 +142,6 @@ This will create an ingress pointing to the ingress-controller's loadbalancer. S
 
 <br/>
 
-#### TLS Configuration
-
-- To ensure that the ingress created has tls configured you will need to create a secret that holds the values of a third party signed valid certificate and key. To create the secret run the command as shown below;
-
-
-```shell
-kubectl create secret tls ditto-bp-tls-secret --cert certificate.pem --key private-key.pem -n ditto-apps
-```
-
-- Once the secret is created reference it in the values.yaml file as shown below;
-
-```yaml
-    # -- Configure TLS for the ingress. Both secretName and hosts can process a Helm template.
-  tls:
-    - hosts:
-      - eks.ditto-umbrella.live
-      secretName: ditto-bp-tls-secret
-```
-
-This will ensure that when the ingress is created it references the certificate we saved as a secret.
-
-
-- The final step will be to then deploy the helm chart using the commands above.
-
-<br/>
-<br/>
 
 ### Big Peer in Production
 
