@@ -65,41 +65,8 @@ By default the following dependencies are enabled:
 
 ### Deploy in EKS Cluster
 
-To deploy the Big Peer into a AWS EKS Cluster like EKS you will need to perform the following actions;
 
-- Create the [EKSClusterRole](https://docs.aws.amazon.com/eks/latest/userguide/cluster-iam-role.html#create-service-role)
-
-
-- Install [eksctl](https://eksctl.io/installation/)
-
-- Deploy EKS cluster with eksctl command
-
-<br/>
-
-```shell
-eksctl create cluster --name <cluster-name> --region <aws-region> --profile <aws-profile>
-```
-<br/>
-
-- Once the cluster is up and running verify that you have [ebs-csi-driver](https://docs.aws.amazon.com/eks/latest/userguide/ebs-csi.html#managing-ebs-csi) running in the `kube-system` namespace. This ensures that you have the provisioner that will dynamicallly create the Persistent Volumes that the hydra-store and kafka zookeeper nodes will need.
-
-<br/>
-
-- If your default storageClass is not set as the the default storageClass you can do that by adding the line below to the annotations.
-
-```yaml
-  storageclass.kubernetes.io/is-default-class: "true"
-```
-
-<br/>
-
-- Install and Configure and [ingress controller](https://github.com/kubernetes-sigs/aws-load-balancer-controller) like [AWS LoadBalancer Controller](https://kubernetes-sigs.github.io/aws-load-balancer-controller/latest/deploy/installation/) or [Ingress Nginx](https://github.com/kubernetes/ingress-nginx/blob/main/charts/ingress-nginx/README.md). Any Ingress Controller will work fine 
-
-- Make sure you have access to the required registry to pull images from the helm chart. This can be done by create a secret that has the registry username,email and password/token.
-
-<br/>
-
-#### Helm Chart Ingress Config 
+#### Ingress Config 
 
 - In order to be able to access the big peer externally you need to configure the ingress in the values.yaml with a valid host name. To do this you will need to create a **CNAME** record that points to the loadbalancer created in the ingress service that has the type `LoadBalancer`.
 
