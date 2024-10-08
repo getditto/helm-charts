@@ -15,13 +15,13 @@ home: https://docs.ditto.live/
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.4
+version: 0.1.5
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "1.39.0"
+appVersion: "1.39.2"
 keywords:
   - ditto
   - bigpeer
@@ -33,7 +33,7 @@ maintainers:
 dependencies:
   # Both longhorn and minio are used for storage, longhorn seems to be more robust
   - name: hades
-    version: "1.39.0"
+    version: "1.39.2-4b6e4e"
     repository: "oci://quay.io/ditto-external"
     condition: hades.enabled
     tags:
@@ -45,13 +45,13 @@ dependencies:
     tags:
       - hydra-consul
   - name: hydra-store
-    version: "1.39.0"
+    version: "1.39.2-4b6e4e"
     repository: "oci://quay.io/ditto-external"
     condition: hydra-store.enabled
     tags:
       - hydra-store
   - name: hydra-subscription
-    version: "1.39.0"
+    version: "1.39.2-4b6e4e"
     repository: "oci://quay.io/ditto-external"
     condition: hydra-subscription.enabled
     tags:

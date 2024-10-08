@@ -1,16 +1,16 @@
 dependencies:
 - name: hades
   repository: oci://quay.io/ditto-external
-  version: 1.39.0
+  version: 1.39.2-4b6e4e
 - name: hydra-consul
   repository: oci://quay.io/ditto-external
   version: 0.1.0
 - name: hydra-store
   repository: oci://quay.io/ditto-external
-  version: 1.39.0
+  version: 1.39.2-4b6e4e
 - name: hydra-subscription
   repository: oci://quay.io/ditto-external
-  version: 1.39.0
+  version: 1.39.2-4b6e4e
 - name: service-token-validator
   repository: oci://quay.io/ditto-external
   version: 0.1.1
@@ -29,5 +29,5 @@ dependencies:
 - name: bpam
   repository: oci://quay.io/ditto-external
   version: 1.0.4
-digest: sha256:93d72a3532c19cef69c139450e3a51a773bf3735396e2cb0cdbfe2e656614297
-generated: "2024-10-04T18:12:36.597004964-04:00"
+digest: sha256:79b47d9f063237e45484d3390f850d215dc036fd0ef458046582ef08fda0f220
+generated: "2024-10-08T10:26:59.787475983-05:00"
