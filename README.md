@@ -61,9 +61,61 @@ By default the following dependencies are enabled:
 - [Strimzi Kafka Operator](https://strimzi.io/)
 - [Cert Manager](https://github.com/cert-manager/cert-manager)
 
+
+
+### Deploy in EKS Cluster
+
+
+#### Ingress Config 
+
+- In order to be able to access the big peer externally you need to configure the ingress in the values.yaml with a valid host name. To do this you will need to create a **CNAME** record that points to the loadbalancer created in the ingress service that has the type `LoadBalancer`.
+
+- Then in your values.yaml file you will need to enable the ingress and update the `host` value with the hostname you created as shown below;
+
+```yaml
+ingress:
+  main:
+    # -- Enables or disables the ingress
+    enabled: true
+
+    # -- Make this the primary ingress (used in probes, notes, etc...).
+    # If there is more than 1 ingress, make sure that only 1 ingress is marked as primary.
+    primary: true
+
+    # -- Override the name suffix that is used for this ingress.
+    nameOverride:
+
+    # -- Provide additional annotations which may be required.
+    annotations:
+      {}
+      # kubernetes.io/ingress.class: traefik
+      # kubernetes.io/tls-acme: "true"
+
+    # -- Provide additional labels which may be required.
+    labels: {}
+
+    # -- Set the ingressClass that is used for this ingress.
+    # Requires Kubernetes >=1.19
+    ingressClassName: alb # "traefik"
+
+    ## Configure the hosts for the ingress
+    hosts:
+      - # -- Host address. Helm template can be passed.
+        host: eks.ditto-umbrella.live
+        ## Configure the paths for the host
+```
+
+This will create an ingress pointing to the ingress-controller's loadbalancer. See the full values file in [here](./values/eks-values.yaml)
+
+<br/>
+
+
 ### Big Peer in Production
 
 Coming Soon...
+
+
+
 
 ### Connecting to a Big Peer with a small peer
 

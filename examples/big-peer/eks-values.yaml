@@ -1,0 +1,109 @@
+# Default values for ditto-umbrella-chart.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+# -- Configure the ingresses for the chart here.
+# Additional ingresses can be added by adding a dictionary key similar to the 'main' ingress.
+# @default -- See below
+ingress:
+  main:
+    # -- Enables or disables the ingress
+    enabled: true
+
+    # -- Make this the primary ingress (used in probes, notes, etc...).
+    # If there is more than 1 ingress, make sure that only 1 ingress is marked as primary.
+    primary: true
+
+    # -- Override the name suffix that is used for this ingress.
+    nameOverride:
+
+    # -- Provide additional annotations which may be required.
+    annotations:
+      {}
+      # kubernetes.io/ingress.class: traefik
+      # kubernetes.io/tls-acme: "true"
+
+    # -- Provide additional labels which may be required.
+    labels: {}
+
+    # -- Set the ingressClass that is used for this ingress.
+    # Requires Kubernetes >=1.19
+    ingressClassName: alb # "traefik"
+
+    ## Configure the hosts for the ingress
+    hosts:
+      - # -- Host address. Helm template can be passed.
+        host: eks.ditto-umbrella.live
+        ## Configure the paths for the host
+        paths:
+          - # -- path.  helm template can be passed.
+            path: /_ditto
+            # -- ignored if not kubeversion >= 1.14-0
+            pathtype: prefix
+            service:
+              # -- overrides the service name reference for this path
+              name: ditto-bp-hydra-subscription
+              # -- overrides the service port reference for this path
+              port: 8080
+
+          - # -- path.  helm template can be passed.
+            path: /
+            # -- ignored if not kubeversion >= 1.14-0
+            pathtype: prefix
+            service:
+              # -- overrides the service name reference for this path
+              name: ditto-bp-hydra-subscription
+              # -- overrides the service port reference for this path
+              port: 10080
+
+    # -- Configure TLS for the ingress. Both secretName and hosts can process a Helm template.
+    tls:
+      - hosts:
+          - eks.ditto-umbrella.live
+        secretName: ditto-bp-tls-secret
+
+######################################
+# Kafka
+# Dependencies: strimzi-kafka-operator
+# Required dependencies must be installed and configured first.
+# NOTE: Enable when kafka-strimzi-operator is installed
+#####################################
+
+kafka:
+  enabled: true
+  strimzi:
+    kafkaVersion: 3.3.2
+    interBrokerProtocolVersion: "3.3"
+    replicas: 3
+    rackAware: false
+    autoCreateTopics: false
+    allowDeleteTopics: false
+    deleteClaim: true
+    volumeSize: 20Gi
+    resources: {}
+    kafkaAntiAffinity: soft
+    kafka:
+      podAnnotations: {}
+    zookeeper:
+      podAnnotations: {}
+      antiAffinity: soft
+      replicas: 3
+      deleteClaim: true
+      volumeSize: 10Gi
+      resources: {}
+    entityTopicOperator:
+      resources: {}
+    entityUserOperator:
+      resources: {}
+    logRetentionCheckInterval: 300000
+
+    entityOperatorLabels: {}
+
+  # nodeSelector:
+  #   app.ditto.live/tier: "app"
+
+  # Network Policies, Ingress polices are built into strimzi charts, other network policies define the ingress in the template.
+  networkPolicies:
+    # This is an ugly hack because of https://github.com/getditto/cloud-infra/issues/107
+    # to enable a graceful switch we make this available to be set to true
+    enableHack: false
