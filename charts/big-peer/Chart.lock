@@ -28,6 +28,6 @@ dependencies:
   version: 0.1.1
 - name: bpam
   repository: oci://quay.io/ditto-external
-  version: 1.0.4
-digest: sha256:79b47d9f063237e45484d3390f850d215dc036fd0ef458046582ef08fda0f220
-generated: "2024-10-08T10:26:59.787475983-05:00"
+  version: 1.0.5
+digest: sha256:8ee1b12ae17c67d08dcfc50d437708d1fc2205d967e7942c59b4cc3db1b8f2f2
+generated: "2024-10-14T16:33:31.450729087-04:00"
