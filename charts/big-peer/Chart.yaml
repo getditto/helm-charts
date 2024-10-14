@@ -90,6 +90,6 @@ dependencies:
   - name: bpam
     repository: "oci://quay.io/ditto-external"
     condition: bpam.enabled
-    version: "1.0.4"
+    version: "1.0.5"
     tags:
       - bpam
