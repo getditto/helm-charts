@@ -749,37 +749,3 @@ dummy-auth-webhook:
   image:
     name: quay.io/ditto-external/big-peer-auth-webhook:1.39.2
     pullPolicy: IfNotPresent
-
-######################################
-# Big Peer Authorization Middleware
-#####################################
-bpam:
-  enabled: false
-
-######################################
-# Strimzi Kafka Operator
-#####################################
-strimzi-kafka-operator:
-  enabled: true
-  replicas: 1
-  # Installs Cluster Roles, Service Accounts etc.
-  createGlobalResources: true
-  watchAnyNamespace: true
-  tolerations: []
-  affinity: {}
-  # nodeSelector:
-  #   app.ditto.live/tier: infrastructure
-  labels:
-    app.ditto.live/service-group: "kafka"
-    app.ditto.live/exposed: "false"
-    app.ditto.live/repo: "ditto-umbrella-chart"
-    app.ditto.live/tier: "infrastructure"
-  # zookeeper:
-  #   replicas: 1
-  # resources:
-  #   limits:
-  #     memory: 1Gi
-  #     cpu: 1
-  #   requests:
-  #     memory: 1Gi
-  #     cpu: 1

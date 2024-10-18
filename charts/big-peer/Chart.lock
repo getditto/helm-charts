@@ -26,8 +26,5 @@ dependencies:
 - name: dummy-auth-webhook
   repository: oci://quay.io/ditto-external
   version: 0.1.1
-- name: bpam
-  repository: oci://quay.io/ditto-external
-  version: 1.0.5
-digest: sha256:8ee1b12ae17c67d08dcfc50d437708d1fc2205d967e7942c59b4cc3db1b8f2f2
-generated: "2024-10-14T16:33:31.450729087-04:00"
+digest: sha256:9f6980558b50fdbc8c009e36e81bf2c80250496b0391c51d244c22e54c6506c1
+generated: "2024-10-18T11:11:28.341290679-04:00"
