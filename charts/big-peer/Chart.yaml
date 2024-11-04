@@ -51,8 +51,9 @@ dependencies:
     tags:
       - hydra-store
   - name: hydra-subscription
-    version: "1.39.2-4b6e4e"
-    repository: "oci://quay.io/ditto-external"
+    version: "1.39.1"
+    #repository: "oci://quay.io/ditto-external"
+    repository: "file://../../../ditto/charts/hydra-subscription"
     condition: hydra-subscription.enabled
     tags:
       - hydra-subscription

@@ -9,8 +9,8 @@ dependencies:
   repository: oci://quay.io/ditto-external
   version: 1.39.2-4b6e4e
 - name: hydra-subscription
-  repository: oci://quay.io/ditto-external
-  version: 1.39.2-4b6e4e
+  repository: file://../../../ditto/charts/hydra-subscription
+  version: 1.39.1
 - name: service-token-validator
   repository: oci://quay.io/ditto-external
   version: 0.2.1
