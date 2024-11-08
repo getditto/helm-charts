@@ -51,9 +51,8 @@ dependencies:
     tags:
       - hydra-store
   - name: hydra-subscription
-    version: "1.39.1"
-    #repository: "oci://quay.io/ditto-external"
-    repository: "file://../../../ditto/charts/hydra-subscription"
+    version: "1.39.2-4b6e4e"
+    repository: "oci://quay.io/ditto-external"
     condition: hydra-subscription.enabled
     tags:
       - hydra-subscription
@@ -70,13 +69,13 @@ dependencies:
     tags:
       - cert-manager
   - name: strimzi-kafka-operator
-    version: "0.34.0"
+    version: "0.44.0"
     repository: "https://strimzi.io/charts"
     condition: strimzi-kafka-operator.enabled
     tags:
       - kafka-operator
   - name: kafka
-    version: "0.2.1"
+    version: "0.2.2"
     repository: "oci://quay.io/ditto-external"
     alias: kafka
     condition: kafka-cluster.enabled

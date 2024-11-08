@@ -9,8 +9,8 @@ dependencies:
   repository: oci://quay.io/ditto-external
   version: 1.39.2-4b6e4e
 - name: hydra-subscription
-  repository: file://../../../ditto/charts/hydra-subscription
-  version: 1.39.1
+  repository: oci://quay.io/ditto-external
+  version: 1.39.0
 - name: service-token-validator
   repository: oci://quay.io/ditto-external
   version: 0.2.1
@@ -19,12 +19,12 @@ dependencies:
   version: v1.10.1
 - name: strimzi-kafka-operator
   repository: https://strimzi.io/charts
-  version: 0.34.0
+  version: 0.44.0
 - name: kafka
   repository: oci://quay.io/ditto-external
-  version: 0.2.1
+  version: 0.2.2
 - name: dummy-auth-webhook
   repository: oci://quay.io/ditto-external
   version: 0.1.1
-digest: sha256:309471fa4086bc0c1fbd858f19fc192112b4449556380798a9fec0fa7529aef1
-generated: "2024-11-08T14:52:35.674157723-05:00"
+digest: sha256:f0ca44d7bb91e5e5eeb45237f12ec0d07360a26ace740c60fc7f5edcc227350d
+generated: "2024-11-08T16:03:41.552362389-05:00"
