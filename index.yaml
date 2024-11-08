@@ -3,6 +3,81 @@ entries:
   big-peer:
   - apiVersion: v2
     appVersion: 1.39.2
+    created: "2024-11-08T20:25:33.669439844Z"
+    dependencies:
+    - condition: hades.enabled
+      name: hades
+      repository: oci://quay.io/ditto-external
+      tags:
+      - hades
+      version: 1.39.2-4b6e4e
+    - condition: hydra-consul.enabled
+      name: hydra-consul
+      repository: oci://quay.io/ditto-external
+      tags:
+      - hydra-consul
+      version: 0.1.0
+    - condition: hydra-store.enabled
+      name: hydra-store
+      repository: oci://quay.io/ditto-external
+      tags:
+      - hydra-store
+      version: 1.39.2-4b6e4e
+    - condition: hydra-subscription.enabled
+      name: hydra-subscription
+      repository: oci://quay.io/ditto-external
+      tags:
+      - hydra-subscription
+      version: 1.39.2-4b6e4e
+    - condition: service-token-validator.enabled
+      name: service-token-validator
+      repository: oci://quay.io/ditto-external
+      tags:
+      - service-token-validator
+      version: 0.2.1
+    - condition: cert-manager.enabled
+      name: cert-manager
+      repository: https://charts.jetstack.io
+      tags:
+      - cert-manager
+      version: 1.10.1
+    - condition: strimzi-kafka-operator.enabled
+      name: strimzi-kafka-operator
+      repository: https://strimzi.io/charts
+      tags:
+      - kafka-operator
+      version: 0.34.0
+    - alias: kafka
+      condition: kafka-cluster.enabled
+      name: kafka
+      repository: oci://quay.io/ditto-external
+      tags:
+      - kafka
+      version: 0.2.1
+    - condition: dummy-auth-webhook.enabled
+      name: dummy-auth-webhook
+      repository: oci://quay.io/ditto-external
+      tags:
+      - dummy-auth-webhook
+      version: 0.1.1
+    description: A Helm chart for Kubernetes
+    digest: b066a94c5418cbb11fa4d007bddc0076aa03744d25f43e36f21a4234ec752ce8
+    home: https://docs.ditto.live/
+    keywords:
+    - ditto
+    - bigpeer
+    maintainers:
+    - email: charts@ditto.live
+      name: Ditto Live
+    name: big-peer
+    sources:
+    - https://github.com/getditto/ditto-helm
+    type: application
+    urls:
+    - https://github.com/getditto/helm-charts/releases/download/big-peer-0.1.8/big-peer-0.1.8.tgz
+    version: 0.1.8
+  - apiVersion: v2
+    appVersion: 1.39.2
     created: "2024-10-18T15:24:13.328602318Z"
     dependencies:
     - condition: hades.enabled
@@ -724,4 +799,4 @@ entries:
     urls:
     - https://github.com/getditto/helm-charts/releases/download/big-peer-0.0.1/big-peer-0.0.1.tgz
     version: 0.0.1
-generated: "2024-10-18T15:24:13.328641802Z"
+generated: "2024-11-08T20:25:33.669485078Z"
