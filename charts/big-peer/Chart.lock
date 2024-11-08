@@ -13,7 +13,7 @@ dependencies:
   version: 1.39.2-4b6e4e
 - name: service-token-validator
   repository: oci://quay.io/ditto-external
-  version: 0.1.1
+  version: 0.2.1
 - name: cert-manager
   repository: https://charts.jetstack.io
   version: v1.10.1
@@ -26,5 +26,5 @@ dependencies:
 - name: dummy-auth-webhook
   repository: oci://quay.io/ditto-external
   version: 0.1.1
-digest: sha256:9f6980558b50fdbc8c009e36e81bf2c80250496b0391c51d244c22e54c6506c1
-generated: "2024-10-18T11:11:28.341290679-04:00"
+digest: sha256:309471fa4086bc0c1fbd858f19fc192112b4449556380798a9fec0fa7529aef1
+generated: "2024-11-08T14:52:35.674157723-05:00"
