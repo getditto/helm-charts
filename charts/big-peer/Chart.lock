@@ -10,7 +10,7 @@ dependencies:
   version: 1.39.2-4b6e4e
 - name: hydra-subscription
   repository: oci://quay.io/ditto-external
-  version: 1.39.0
+  version: 1.39.2-4b6e4e
 - name: service-token-validator
   repository: oci://quay.io/ditto-external
   version: 0.2.1
@@ -26,5 +26,5 @@ dependencies:
 - name: dummy-auth-webhook
   repository: oci://quay.io/ditto-external
   version: 0.1.1
-digest: sha256:f0ca44d7bb91e5e5eeb45237f12ec0d07360a26ace740c60fc7f5edcc227350d
-generated: "2024-11-08T16:03:41.552362389-05:00"
+digest: sha256:15b4bb1cc780a48d43a97b5aa1ec9a92ae929ea46f1d9ef566b85cfc6080995f
+generated: "2024-11-12T16:35:51.590322745-05:00"
