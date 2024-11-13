@@ -47,6 +47,25 @@ global:
   tolerations: []
   affinity: {}
 
+
+# global kafka cluster options
+kafka:
+  # enable kraft mode for dual use Kafka nodes in a common node pool
+  kraft:
+    enabled: false
+    nodePool:
+      dualRoles: true
+      replicas: 1
+
+  # disable kafka supporting services that are not required
+  strimzi:
+    #interBrokerProtocolVersion: 3.8.0
+    kafkaVersion: 3.8.0
+    kafkaExporter:
+      enabled: false
+    cruiseControl:
+      enabled: false
+
 # -- Configure the ingresses for the chart here.
 # Additional ingresses can be added by adding a dictionary key similar to the 'main' ingress.
 # @default -- See below

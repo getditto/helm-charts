@@ -15,7 +15,7 @@ home: https://docs.ditto.live/
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.8
+version: 0.1.9
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -69,13 +69,13 @@ dependencies:
     tags:
       - cert-manager
   - name: strimzi-kafka-operator
-    version: "0.34.0"
+    version: "0.44.0"
     repository: "https://strimzi.io/charts"
     condition: strimzi-kafka-operator.enabled
     tags:
       - kafka-operator
   - name: kafka
-    version: "0.2.1"
+    version: "0.2.2"
     repository: "oci://quay.io/ditto-external"
     alias: kafka
     condition: kafka-cluster.enabled
