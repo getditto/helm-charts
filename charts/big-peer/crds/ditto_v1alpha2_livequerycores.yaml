@@ -1,0 +1,154 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: livequerycores.cloud.app.ditto.live
+spec:
+  group: cloud.app.ditto.live
+  names:
+    categories:
+      - livequery
+    kind: LiveQueryCore
+    plural: livequerycores
+    shortNames:
+      - lqc
+    singular: livequerycore
+  scope: Namespaced
+  versions:
+    - additionalPrinterColumns:
+        - description: The name of the RegistryApp
+          jsonPath: ".spec.appId"
+          name: RegistryApp
+          type: string
+        - description: The name of the HydraCluster
+          jsonPath: ".spec.hydraClusterRef.name"
+          name: HydraCluster
+          type: string
+        - description: The namespace of the HydraCluster
+          jsonPath: ".spec.hydraClusterRef.namespace"
+          name: HydraClusterNS
+          type: string
+        - description: The name of the CDCKafka cluster
+          jsonPath: ".spec.cdcKafkaClusterRef.name"
+          name: CDCKafka
+          type: string
+        - description: The namespace of the CDCKafka cluster
+          jsonPath: ".spec.cdcKafkaClusterRef.namespace"
+          name: CDCKafkaNS
+          type: string
+      name: v1alpha2
+      schema:
+        openAPIV3Schema:
+          description: "Live Query Core represents the core workloads for the Change Data Capture (CDC) subsystem, including the CDC transformer, the stream splitter, and the CDC heartbeat. The CDC heartbeat pushes heartbeat data through the internal database's transaction log and consumes it to ensure the database is healthy. The CDC transformer consumes transaction data off of the internal database's transaction log directly, computing a DocumentDiff and sending it downstream to the stream splitter. The stream splitter splits the input stream into the target format and fans the data out to downstream LiveQuerySource Kafka Topics. LiveQuerySource and LiveQuerySink objects require a deployed LiveQueryCore to function."
+          properties:
+            spec:
+              properties:
+                appId:
+                  description: "Stable, unique ID of the Ditto app this object belongs to"
+                  type: string
+                cdcKafkaClusterRef:
+                  description: "Kubernetes ref to the `Kafka` CR where the CDC pipeline is hosted"
+                  properties:
+                    name:
+                      description: "Name of the `Kafka` CR object"
+                      type: string
+                    namespace:
+                      description: "Namespace where the `Kafka` CR is located"
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                description:
+                  description: Optional description of this object
+                  nullable: true
+                  type: string
+                httpApiServerPoolRef:
+                  description: "Kubernetes ref to an `HttpApiServerPool` available to this app"
+                  nullable: true
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                hydraClusterRef:
+                  description: "Kubernetes ref to the `HydraCluster` this app belongs to"
+                  properties:
+                    name:
+                      description: "Name of the `HydraCluster` CR object"
+                      type: string
+                    namespace:
+                      description: "Namespace where the `HydraCluster` CR is located"
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                subscriptionPoolRef:
+                  description: "Kubernetes ref to the `SubscriptionPool` this app uses"
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+              required:
+                - appId
+                - cdcKafkaClusterRef
+                - hydraClusterRef
+                - subscriptionPoolRef
+              type: object
+            status:
+              nullable: true
+              properties:
+                conditions:
+                  properties:
+                    kafka_resources_created:
+                      properties:
+                        message:
+                          nullable: true
+                          type: string
+                        status:
+                          nullable: true
+                          type: boolean
+                      type: object
+                    ready:
+                      properties:
+                        message:
+                          nullable: true
+                          type: string
+                        status:
+                          nullable: true
+                          type: boolean
+                      type: object
+                    workloads_deployed:
+                      properties:
+                        message:
+                          nullable: true
+                          type: string
+                        status:
+                          nullable: true
+                          type: boolean
+                      type: object
+                  required:
+                    - kafka_resources_created
+                    - ready
+                    - workloads_deployed
+                  type: object
+              required:
+                - conditions
+              type: object
+          required:
+            - spec
+          title: LiveQueryCore
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

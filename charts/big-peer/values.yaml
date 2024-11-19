@@ -47,6 +47,11 @@ global:
   tolerations: []
   affinity: {}
 
+apps:
+  my-app:
+    enabled: true
+    id: 891c1bdb-71c6-40d5-9374-128e467c367e 
+
 
 # global kafka cluster options
 kafka:
@@ -770,7 +775,7 @@ dummy-auth-webhook:
     pullPolicy: IfNotPresent
 
 live-query:
-  enabled: false
+  enabled: true
 
   image:
     repository: quay.io/ditto-external/big-peer-live-query-resource-controller

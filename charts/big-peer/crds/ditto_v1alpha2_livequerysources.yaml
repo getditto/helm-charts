@@ -1,0 +1,159 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: livequerysources.cloud.app.ditto.live
+spec:
+  group: cloud.app.ditto.live
+  names:
+    categories:
+      - livequery
+    kind: LiveQuerySource
+    plural: livequerysources
+    shortNames:
+      - lqsrc
+    singular: livequerysource
+  scope: Namespaced
+  versions:
+    - additionalPrinterColumns:
+        - description: The name of the RegistryApp
+          jsonPath: ".spec.appId"
+          name: RegistryApp
+          type: string
+        - description: The CDC Core object this source is tied to.
+          jsonPath: ".spec.liveQueryCoreRef"
+          name: LQ Core
+          type: string
+        - description: The message schema of the output (typed or untyped)
+          jsonPath: ".spec.schema"
+          name: Schema
+          type: string
+        - jsonPath: ".metadata.creationTimestamp"
+          name: Age
+          type: date
+      name: v1alpha2
+      schema:
+        openAPIV3Schema:
+          description: "Live Query Sources are dedicated data stream \"sources\" of event data for the Change Data Capture (CDC) subsystem. Each source typically represents a query against a set of documents in the Hydra Store mirrored out into a Kafka topic. Note that multiple live query sources may share the same query if they specify a different output schema."
+          properties:
+            spec:
+              description: "Kubernetes CRD for Live Query \"Source\" streams\n\nA Source stream is the result of taking the full CDC pipeline of change events and creating a filtered subset of that stream by applying a `DQL` query to it. Defining a [`LiveQuerySource`] leads to the provisioning of a new Kafka topic, and instructs `stream-splitter` to funnel data for our query to the stream.\n\nBeyond this, see [`LiveQuerySink`] for a mechanism for reading data from a Source stream and exporting it to various other data platforms.\n\n[`LiveQuerySink`]: crate::crds::v1alpha2::live_query_sink::LiveQuerySink"
+              properties:
+                appId:
+                  description: "The AppId of the [`RegistryApp`] this source belongs to"
+                  format: uuid
+                  type: string
+                collection:
+                  description: "Ditto collection the Live Query is subscribed for; here `None` refers to all collections which means the \"firehose\" of data"
+                  nullable: true
+                  type: string
+                description:
+                  description: Optional description of this source object
+                  nullable: true
+                  type: string
+                liveQueryCoreRef:
+                  description: "Reference to the `LiveQueryCore` object of this source's [`RegistryApp`]"
+                  nullable: true
+                  properties:
+                    name:
+                      description: "The `.metadata.name` of the `LiveQueryCore` being referenced"
+                      type: string
+                    namespace:
+                      description: "The `.metadata.namespace` of the `LiveQueryCore` being referenced"
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                output:
+                  description: "The type of data stream to write our [`LiveQuerySource`] data to"
+                  oneOf:
+                    - required:
+                        - kafka
+                  properties:
+                    kafka:
+                      description: "Send [`LiveQuerySource`] data to a Kafka topic"
+                      properties:
+                        cluster:
+                          description: "Ref to the `Kafka` CRD where CDC is hosted"
+                          properties:
+                            name:
+                              description: "Name of the `Kafka` CR object"
+                              type: string
+                            namespace:
+                              description: "Namespace where the `Kafka` CR is located"
+                              type: string
+                          required:
+                            - name
+                            - namespace
+                          type: object
+                        topicName:
+                          description: The topic name to write to
+                          type: string
+                      required:
+                        - cluster
+                        - topicName
+                      type: object
+                  type: object
+                queryFilterExpression:
+                  description: Query filter expression to scope the data matching for the Live Query
+                  type: string
+                schema:
+                  description: "Schema of CDC messages to be written in this source's data stream"
+                  enum:
+                    - untyped
+                    - typed
+                  type: string
+              required:
+                - appId
+                - output
+                - queryFilterExpression
+                - schema
+              type: object
+            status:
+              nullable: true
+              properties:
+                conditions:
+                  properties:
+                    kafka_topic_created:
+                      properties:
+                        message:
+                          nullable: true
+                          type: string
+                        status:
+                          nullable: true
+                          type: boolean
+                      type: object
+                    ready:
+                      properties:
+                        message:
+                          nullable: true
+                          type: string
+                        status:
+                          nullable: true
+                          type: boolean
+                      type: object
+                    requested:
+                      properties:
+                        message:
+                          nullable: true
+                          type: string
+                        status:
+                          nullable: true
+                          type: boolean
+                      type: object
+                  required:
+                    - kafka_topic_created
+                    - ready
+                    - requested
+                  type: object
+              required:
+                - conditions
+              type: object
+          required:
+            - spec
+          title: LiveQuerySource
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
