@@ -771,3 +771,48 @@ dummy-auth-webhook:
 
 live-query:
   enabled: false
+
+  image:
+    repository: quay.io/ditto-external/big-peer-live-query-resource-controller
+    tag: latest
+
+  env:
+    # Main config
+    INSTANCE_NAME: "live-query-resource-controller"
+    LIVE_QUERY_WATCHER_NAMESPACE: ""
+    TARGET_NAMESPACE_TEMPLATE: "bp"
+    APP_LABEL_SELECTOR: "cloud.app.ditto.live/cluster-ns=bp"
+
+    # Kafka user ingress config
+    KAFKA_INGRESS_DOMAIN: ""
+    KAFKA_INGRESS_CLASS: ""
+
+    # CDC workload config
+    CDC_RESOURCE_REQUEST_CPU: 40m
+    CDC_RESOURCE_REQUEST_MEMORY: 1G
+    CDC_RESOURCE_LIMIT_MEMORY: 4G
+    CDC_IMAGE: quay.io/ditto-external/hydra-cdc:1.39.2
+    CDC_TOKEN_AUDIENCE: cloud.ditto.live
+    CDC_KAFKA_REPLICATION_FACTOR: 3
+
+    # StreamSplitter workload config
+    STREAM_SPLITTER_RESOURCE_REQUEST_CPU: 20m
+    STREAM_SPLITTER_RESOURCE_REQUEST_MEMORY: 256Mi
+    STREAM_SPLITTER_RESOURCE_LIMIT_MEMORY: 1G
+    STREAM_SPLITTER_IMAGE: quay.io/ditto-external/hydra-stream-splitter:latest-46073-c0fe1e
+    STREAM_SPLITTER_TOKEN_AUDIENCE: cloud.ditto.live
+
+    # WebhookDispatcher workload config
+    WEBHOOK_DISPATCHER_RESOURCE_REQUEST_CPU: 20m
+    WEBHOOK_DISPATCHER_RESOURCE_REQUEST_MEMORY: 24Mi
+    WEBHOOK_DISPATCHER_RESOURCE_LIMIT_MEMORY: 128Mi
+    WEBHOOK_DISPATCHER_IMAGE: quay.io/ditto-external/hydra-webhook-dispatcher:latest-46073-c0fe1e
+    WEBHOOK_DISPATCHER_TOKEN_AUDIENCE: cloud.ditto.live
+
+    # CDC Hearbeat workload config
+    CDC_HEARTBEAT_RESOURCE_REQUEST_CPU: 20m
+    CDC_HEARTBEAT_RESOURCE_REQUEST_MEMORY: 50Mi
+    CDC_HEARTBEAT_RESOURCE_LIMIT_MEMORY: 150Mi
+    CDC_HEARTBEAT_IMAGE: quay.io/ditto-external/cdc-heartbeat:latest-46073-c0fe1e
+    CDC_HEARTBEAT_TOKEN_AUDIENCE: cloud.ditto.live
+    CDC_HEARTBEAT_KAFKA_REPLICATION_FACTOR: 3

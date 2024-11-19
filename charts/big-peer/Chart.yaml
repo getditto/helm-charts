@@ -87,9 +87,10 @@ dependencies:
     version: "0.1.1"
     tags:
       - dummy-auth-webhook
-  - name: live-query
+  - name: live-query-resource-controller
+    alias: live-query
     repository: "oci://quay.io/ditto-external"
     condition: live-query.enabled
-    version: "1.39.2"
+    version: "0.1.0-002c59"
     tags:
       - live-query
