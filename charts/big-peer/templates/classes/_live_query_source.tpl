@@ -1,4 +1,4 @@
-{{- define "common.classes.registryapp" -}}
+{{- define "common.classes.live_query_source" -}}
   {{- $fullname := include "common.names.fullname" . -}}
   {{- $id := .Values.id -}}
   {{- $appValues := .Values.app -}}
@@ -8,13 +8,14 @@
       {{- $appValues = . -}}
     {{- end -}}
   {{ end -}}
+
+  {{- $values := $appValues.liveQuery -}}
   {{- if and (hasKey $appValues "nameOverride") $appValues.nameOverride -}}
     {{- $app = $appValues.nameOverride -}}
   {{- end -}}
-
 ---
 apiVersion: cloud.app.ditto.live/v1alpha2
-kind: RegistryApp
+kind: LiveQuerySource
 metadata:
   name: {{ $appValues.id }}
   {{- with (merge ($values.labels | default dict) (include "common.labels" $ | fromYaml)) }}
@@ -25,22 +26,17 @@ metadata:
   {{- end }}
 spec:
   appId: {{ $appValues.id }}
-  cdcKafkaClusterRef:
-    name: {{ .Release.Name }}-kafka
-    namespace: {{ .Release.Namespace }} 
   description: null
-  httpApiServerPoolRef:
-    name: {{ .Release.Name }}hydra-subscription-api
-    namespace: {{.Release.Namespace}}
-  hydraClusterRef:
-    name: {{ .Release.Name }}-hydra-store
+  collection: null 
+  liveQueryCoreRef:
+    name: {{ $appValues.id }}
     namespace: {{ .Release.Namespace }}
-  ingressDomains: {}
-  name: {{ $fullname }}
-  slug: {{ $fullname }}
-  organizationUrl: ""
-  url: ""
-  subscriptionPoolRef:
-    name: {{ .Release.Name }}-hydra-subscription
-    namespace: {{ .Release.Namespace }}
+  output:
+    kafka:
+      cluster:
+        name: {{ .Release.Name }}-live-query-kafka
+        namespace: {{ .Release.Namespace }} 
+      topicName: user-consumable-{{ $appValues.id }}
+  queryFilterExpression: {{ $values.queryFilterExpression | quote }}
+  schema: {{ $values.schema }}
 {{- end }}

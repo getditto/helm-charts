@@ -94,3 +94,11 @@ dependencies:
     version: "0.1.0-002c59"
     tags:
       - live-query
+  - name: kafka
+    alias: live-query-kafka
+    version: "0.2.2"
+    repository: "oci://quay.io/ditto-external"
+    condition: live-query.enabled
+    tags:
+      - kafka
+
