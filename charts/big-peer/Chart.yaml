@@ -15,7 +15,7 @@ home: https://docs.ditto.live/
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.1.9
+version: 0.2.9
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -87,3 +87,18 @@ dependencies:
     version: "0.1.1"
     tags:
       - dummy-auth-webhook
+  - name: live-query-resource-controller
+    alias: live-query
+    repository: "oci://quay.io/ditto-external"
+    condition: live-query.enabled
+    version: "0.1.0-002c59"
+    tags:
+      - live-query
+  - name: kafka
+    alias: live-query-kafka
+    version: "0.2.2"
+    repository: "oci://quay.io/ditto-external"
+    condition: live-query.enabled
+    tags:
+      - kafka
+

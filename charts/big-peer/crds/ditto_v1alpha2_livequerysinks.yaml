@@ -1,0 +1,293 @@
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: livequerysinks.cloud.app.ditto.live
+spec:
+  group: cloud.app.ditto.live
+  names:
+    categories:
+      - cdc
+    kind: LiveQuerySink
+    plural: livequerysinks
+    shortNames:
+      - lqsink
+    singular: livequerysink
+  scope: Namespaced
+  versions:
+    - additionalPrinterColumns:
+        - description: "The id of the app, equivalent to RegistryApp name"
+          jsonPath: ".spec.appId"
+          name: App
+          type: string
+        - description: The output webhook for the sink
+          jsonPath: ".spec.destination.webhook"
+          name: Webhook
+          type: string
+        - description: The output kafka topic for this sink
+          jsonPath: ".spec.destination.kafka"
+          name: Topic
+          type: string
+        - jsonPath: ".metadata.creationTimestamp"
+          name: Age
+          type: date
+      name: v1alpha2
+      schema:
+        openAPIV3Schema:
+          description: "Live Query Sinks are dedicated data stream \"sinks\" of event data for the Change Data Capture (CDC) subsystem. Each sink is a destination for data queried out of the document store in the database. Typically, sinks use a corresponding LiveQuerySource's KafkaTopic as data input, connecting it to the requested customer interface (e.g. a Kafka user and ingress to the CDC broker bootstrap host, a connector component that consumes from the source and forwards to some destination like a webhook, et cetera)"
+          properties:
+            spec:
+              description: "Kubernetes CRD for Live Query \"Sink\" connectors\n\nA Sink is an application that reads query data from a Source's data stream and does something with it. Sinks will likely be connectors to other data platforms, implemented as a Kafka consumer along with a data client such as an S3 library.\n\nNew Sinks may be implemented freely whenever one has a need to read or consume the data that was written to a [`LiveQuerySource`] stream."
+              properties:
+                appId:
+                  description: "AppId of the [`RegistryApp`] this Sink belongs to"
+                  format: uuid
+                  type: string
+                description:
+                  description: Optional description of this Sink
+                  nullable: true
+                  type: string
+                destination:
+                  description: "Type of Sink, per the destination where the sink sends data"
+                  oneOf:
+                    - required:
+                        - kafkaConsumer
+                    - required:
+                        - webhook
+                  properties:
+                    kafkaConsumer:
+                      properties:
+                        cluster:
+                          description: "Ref to a `Kafka` CRD hosting the CDC topics"
+                          nullable: true
+                          properties:
+                            name:
+                              description: "Name of the `Kafka` CR object"
+                              type: string
+                            namespace:
+                              description: "Namespace where the `Kafka` CR is located"
+                              type: string
+                          required:
+                            - name
+                            - namespace
+                          type: object
+                        consumerGroup:
+                          type: string
+                        topicName:
+                          type: string
+                      required:
+                        - consumerGroup
+                        - topicName
+                      type: object
+                    webhook:
+                      properties:
+                        sourceTopicName:
+                          type: string
+                        url:
+                          format: uri
+                          type: string
+                      required:
+                        - sourceTopicName
+                        - url
+                      type: object
+                  type: object
+                liveQueryCoreRef:
+                  description: "Ref to the [`LiveQueryCore`] object associated with this Sink's [`RegistryApp`]"
+                  nullable: true
+                  properties:
+                    name:
+                      description: "The `.metadata.name` of the `LiveQueryCore` being referenced"
+                      type: string
+                    namespace:
+                      description: "The `.metadata.namespace` of the `LiveQueryCore` being referenced"
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                liveQuerySourceRef:
+                  description: "Ref to the [`LiveQuerySource`] object associated with this Sink's [`RegistryApp`]"
+                  properties:
+                    name:
+                      description: "The `.metadata.name` of the `LiveQuerySource` being referenced"
+                      type: string
+                    namespace:
+                      description: "The `.metadata.namespace` of the `LiveQuerySource` being referenced"
+                      nullable: true
+                      type: string
+                  required:
+                    - name
+                  type: object
+              required:
+                - appId
+                - destination
+                - liveQuerySourceRef
+              type: object
+            status:
+              nullable: true
+              properties:
+                clientConfig:
+                  nullable: true
+                  oneOf:
+                    - required:
+                        - kafka
+                    - required:
+                        - webhook
+                  properties:
+                    kafka:
+                      properties:
+                        authConfig:
+                          properties:
+                            clusterCaCert:
+                              description: SecretKeySelector selects a key of a Secret.
+                              properties:
+                                key:
+                                  description: The key of the secret to select from.  Must be a valid secret key.
+                                  type: string
+                                name:
+                                  description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names"
+                                  type: string
+                                optional:
+                                  description: Specify whether the Secret or its key must be defined
+                                  type: boolean
+                              required:
+                                - key
+                              type: object
+                            clusterCaCertPassword:
+                              description: SecretKeySelector selects a key of a Secret.
+                              properties:
+                                key:
+                                  description: The key of the secret to select from.  Must be a valid secret key.
+                                  type: string
+                                name:
+                                  description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names"
+                                  type: string
+                                optional:
+                                  description: Specify whether the Secret or its key must be defined
+                                  type: boolean
+                              required:
+                                - key
+                              type: object
+                            secretNamespace:
+                              type: string
+                            userCaCert:
+                              description: SecretKeySelector selects a key of a Secret.
+                              properties:
+                                key:
+                                  description: The key of the secret to select from.  Must be a valid secret key.
+                                  type: string
+                                name:
+                                  description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names"
+                                  type: string
+                                optional:
+                                  description: Specify whether the Secret or its key must be defined
+                                  type: boolean
+                              required:
+                                - key
+                              type: object
+                            userCaCertPassword:
+                              description: SecretKeySelector selects a key of a Secret.
+                              properties:
+                                key:
+                                  description: The key of the secret to select from.  Must be a valid secret key.
+                                  type: string
+                                name:
+                                  description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names"
+                                  type: string
+                                optional:
+                                  description: Specify whether the Secret or its key must be defined
+                                  type: boolean
+                              required:
+                                - key
+                              type: object
+                          required:
+                            - clusterCaCert
+                            - clusterCaCertPassword
+                            - secretNamespace
+                            - userCaCert
+                            - userCaCertPassword
+                          type: object
+                        consumerGroup:
+                          type: string
+                        endpoint:
+                          type: string
+                        host:
+                          format: uri
+                          type: string
+                        topicName:
+                          type: string
+                      required:
+                        - authConfig
+                        - consumerGroup
+                        - endpoint
+                        - host
+                        - topicName
+                      type: object
+                    webhook:
+                      properties:
+                        hmacSeed:
+                          description: SecretKeySelector selects a key of a Secret.
+                          properties:
+                            key:
+                              description: The key of the secret to select from.  Must be a valid secret key.
+                              type: string
+                            name:
+                              description: "Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names"
+                              type: string
+                            optional:
+                              description: Specify whether the Secret or its key must be defined
+                              type: boolean
+                          required:
+                            - key
+                          type: object
+                      required:
+                        - hmacSeed
+                      type: object
+                  type: object
+                conditions:
+                  nullable: true
+                  properties:
+                    ready:
+                      properties:
+                        condition_type:
+                          enum:
+                            - requested
+                            - ready
+                          type: string
+                        message:
+                          nullable: true
+                          type: string
+                        status:
+                          nullable: true
+                          type: boolean
+                      required:
+                        - condition_type
+                      type: object
+                    requested:
+                      properties:
+                        condition_type:
+                          enum:
+                            - requested
+                            - ready
+                          type: string
+                        message:
+                          nullable: true
+                          type: string
+                        status:
+                          nullable: true
+                          type: boolean
+                      required:
+                        - condition_type
+                      type: object
+                  required:
+                    - ready
+                    - requested
+                  type: object
+              type: object
+          required:
+            - spec
+          title: LiveQuerySink
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}

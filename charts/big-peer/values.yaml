@@ -47,6 +47,34 @@ global:
   tolerations: []
   affinity: {}
 
+apps:
+  myApp:
+    enabled: false
+    id: 891c1bdb-71c6-40d5-9374-128e467c367e # uuid generated via uuidgen 
+
+    liveQuery:
+      enabled: false
+      queries:
+        - name: "all_the_things"
+          enabled: true
+          queryFilterExpression: "true"
+          schema: untyped
+          sinks:
+            kafka:
+              enabled: true
+            webhook:
+              enabled: true
+              url: "http://myapp.com/rimshot"
+        - name: "send_to_hook"
+          enabled: true
+          queryFilterExpression: "true"
+          schema: untyped
+          sinks:
+            webhook:
+              enabled: true
+              url: "http://myapp.com/rimshot"
+
+
 
 # global kafka cluster options
 kafka:
@@ -768,3 +796,79 @@ dummy-auth-webhook:
   image:
     name: quay.io/ditto-external/big-peer-auth-webhook:1.39.2
     pullPolicy: IfNotPresent
+
+
+######################################
+# Live Query
+#####################################
+live-query:
+  enabled: true
+
+  image:
+    repository: quay.io/ditto-external/big-peer-live-query-resource-controller
+    tag: latest
+
+  env:
+    # Main config
+    INSTANCE_NAME: "live-query-resource-controller"
+    LIVE_QUERY_WATCHER_NAMESPACE: "bp"
+    TARGET_NAMESPACE_TEMPLATE: "bp"
+    APP_LABEL_SELECTOR: "app.kubernetes.io/instance=ditto-bp"
+    DEPLOY_NETWORK_POLICIES: false
+    DEPLOY_SERVICE_MONITORS: false
+
+    # Kafka user ingress config
+    KAFKA_INGRESS_DOMAIN: ""
+    KAFKA_INGRESS_CLASS: ""
+    KAFKA_REPLICATION_FACTOR: "1"
+
+    # CDC workload config
+    CDC_RESOURCE_REQUEST_CPU: 40m
+    CDC_RESOURCE_REQUEST_MEMORY: 1G
+    CDC_RESOURCE_LIMIT_MEMORY: 4G
+    CDC_IMAGE: quay.io/ditto-external/hydra-cdc:1.39.2
+    CDC_TOKEN_AUDIENCE: cloud.ditto.live
+    CDC_KAFKA_REPLICATION_FACTOR: 1
+
+    # StreamSplitter workload config
+    STREAM_SPLITTER_RESOURCE_REQUEST_CPU: 20m
+    STREAM_SPLITTER_RESOURCE_REQUEST_MEMORY: 256Mi
+    STREAM_SPLITTER_RESOURCE_LIMIT_MEMORY: 1G
+    STREAM_SPLITTER_IMAGE: quay.io/ditto-external/hydra-stream-splitter:1.39.2
+    STREAM_SPLITTER_TOKEN_AUDIENCE: cloud.ditto.live
+
+    # WebhookDispatcher workload config
+    WEBHOOK_DISPATCHER_RESOURCE_REQUEST_CPU: 20m
+    WEBHOOK_DISPATCHER_RESOURCE_REQUEST_MEMORY: 24Mi
+    WEBHOOK_DISPATCHER_RESOURCE_LIMIT_MEMORY: 128Mi
+    WEBHOOK_DISPATCHER_IMAGE: quay.io/ditto-external/hydra-webhook-dispatcher:1.39.2
+    WEBHOOK_DISPATCHER_TOKEN_AUDIENCE: cloud.ditto.live
+
+    # CDC Hearbeat workload config
+    CDC_HEARTBEAT_RESOURCE_REQUEST_CPU: 20m
+    CDC_HEARTBEAT_RESOURCE_REQUEST_MEMORY: 50Mi
+    CDC_HEARTBEAT_RESOURCE_LIMIT_MEMORY: 150Mi
+    CDC_HEARTBEAT_IMAGE: quay.io/ditto-external/cdc-heartbeat:1.39.2
+    CDC_HEARTBEAT_TOKEN_AUDIENCE: cloud.ditto.live
+    CDC_HEARTBEAT_KAFKA_REPLICATION_FACTOR: 1
+
+live-query-kafka:
+  # enable kraft mode for dual use Kafka nodes in a common node pool
+  kraft:
+    enabled: false
+    nodePool:
+      dualRoles: true
+      replicas: 1
+
+  # disable kafka supporting services that are not required
+  strimzi:
+    replicas: 3
+    authorization: simple
+    external: true
+
+    #interBrokerProtocolVersion: 3.8.0
+    kafkaVersion: 3.8.0
+    kafkaExporter:
+      enabled: false
+    cruiseControl:
+      enabled: false

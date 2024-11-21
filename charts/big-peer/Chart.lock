@@ -26,5 +26,8 @@ dependencies:
 - name: dummy-auth-webhook
   repository: oci://quay.io/ditto-external
   version: 0.1.1
-digest: sha256:15b4bb1cc780a48d43a97b5aa1ec9a92ae929ea46f1d9ef566b85cfc6080995f
-generated: "2024-11-12T16:35:51.590322745-05:00"
+- name: live-query-resource-controller
+  repository: oci://quay.io/ditto-external
+  version: 0.1.0-002c59
+digest: sha256:241c4da54c53eaf4b53397243ca2fc133f304b2320e674e806dd8d74e5db7248
+generated: "2024-11-19T15:20:57.960082134-06:00"

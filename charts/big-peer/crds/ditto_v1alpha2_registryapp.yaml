@@ -1,0 +1,175 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: registryapps.cloud.app.ditto.live
+spec:
+  group: cloud.app.ditto.live
+  names:
+    kind: RegistryApp
+    plural: registryapps
+    singular: registryapp
+  scope: Cluster
+  versions:
+    - additionalPrinterColumns:
+        - description: The name of the HydraCluster
+          jsonPath: ".spec.hydraClusterRef.name"
+          name: HydraCluster
+          type: string
+        - description: The namespace of the HydraCluster
+          jsonPath: ".spec.hydraClusterRef.namespace"
+          name: HydraClusterNS
+          type: string
+        - description: The name of the CDCKafka cluster
+          jsonPath: ".spec.cdcKafkaClusterRef.name"
+          name: CDCKafka
+          type: string
+        - description: The namespace of the CDCKafka cluster
+          jsonPath: ".spec.cdcKafkaClusterRef.namespace"
+          name: CDCKafkaNS
+          type: string
+        - jsonPath: ".metadata.creationTimestamp"
+          name: Age
+          type: date
+      name: v1alpha2
+      schema:
+        openAPIV3Schema:
+          description: "Auto-generated derived type for RegistryAppSpec via `CustomResource`"
+          properties:
+            spec:
+              properties:
+                appId:
+                  type: string
+                cdcKafkaClusterRef:
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                description:
+                  nullable: true
+                  type: string
+                httpApiServerPoolRef:
+                  nullable: true
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                hydraClusterRef:
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                ingressDomains:
+                  additionalProperties:
+                    properties:
+                      httpEnabled:
+                        type: boolean
+                      wsEnabled:
+                        type: boolean
+                    required:
+                      - httpEnabled
+                      - wsEnabled
+                    type: object
+                  default: {}
+                  type: object
+                name:
+                  type: string
+                organizationUrl:
+                  type: string
+                slug:
+                  type: string
+                subscriptionPoolRef:
+                  properties:
+                    name:
+                      type: string
+                    namespace:
+                      type: string
+                  required:
+                    - name
+                    - namespace
+                  type: object
+                url:
+                  type: string
+              required:
+                - appId
+                - cdcKafkaClusterRef
+                - hydraClusterRef
+                - name
+                - organizationUrl
+                - slug
+                - subscriptionPoolRef
+                - url
+              type: object
+            status:
+              nullable: true
+              properties:
+                changeDataCaptureStatus:
+                  default: {}
+                  properties:
+                    actualCount:
+                      format: int16
+                      nullable: true
+                      type: integer
+                    desiredCount:
+                      format: int16
+                      nullable: true
+                      type: integer
+                    state:
+                      enum:
+                        - ERROR
+                        - REQUESTED
+                        - READY
+                      nullable: true
+                      type: string
+                  type: object
+                ingressDomainStatus:
+                  additionalProperties:
+                    properties:
+                      http:
+                        enum:
+                          - ERROR
+                          - CREATED
+                          - READY
+                        nullable: true
+                        type: string
+                      observedStatus:
+                        enum:
+                          - ERROR
+                          - CREATED
+                          - READY
+                        nullable: true
+                        type: string
+                      webSocket:
+                        enum:
+                          - ERROR
+                          - CREATED
+                          - READY
+                        nullable: true
+                        type: string
+                    type: object
+                  default: {}
+                  type: object
+              type: object
+          required:
+            - spec
+          title: RegistryApp
+          type: object
+      served: true
+      storage: true
+      subresources:
+        status: {}
