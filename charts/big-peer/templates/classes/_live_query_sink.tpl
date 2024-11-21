@@ -3,11 +3,17 @@
   {{- $id := .Values.id -}}
   {{- $appValues := .Values.app -}}
   {{- $values := .Values.app -}}
+  {{- $queryValues := .Values.query -}}
   {{- $dest := dict "enabled" false -}}
   {{- $dest_type := dict "destination_type" "" -}}
+  {{- $source_name := .ObjectValues.source_name -}}
   {{- if hasKey . "ObjectValues" -}}
     {{- with .ObjectValues.app -}}
       {{- $appValues = . -}}
+    {{- end -}}
+
+    {{- with .ObjectValues.query -}}
+      {{- $queryValues = . -}}
     {{- end -}}
 
     {{- with .ObjectValues.sink -}}
@@ -20,12 +26,12 @@
 
   {{- if and (hasKey $appValues "nameOverride") $appValues.nameOverride -}}
     {{- $app = $appValues.nameOverride -}}
-  {{- end -}}
+  {{ end -}}
 ---
 apiVersion: cloud.app.ditto.live/v1alpha2
 kind: LiveQuerySink
 metadata:
-  name: {{ $appValues.id }}
+  name: {{ uuidv4 }}
   {{- with (merge ($values.labels | default dict) (include "common.labels" $ | fromYaml)) }}
   labels: {{- toYaml . | nindent 4 }}
   {{- end }}
@@ -46,28 +52,32 @@ spec:
     {{- end }}
     {{- if eq $dest_type "webhook" }}
       webhook:
-        sourceTopicName: {{ $appValues.id }}
+        sourceTopicName: {{ $source_name }}
         url: {{ $dest.url | quote }}
     {{- end }}
   liveQueryCoreRef:
     name: {{ $appValues.id }}
     namespace: {{ .Release.Namespace }}
   liveQuerySourceRef:
-    name: {{ $appValues.id }}
+    name: {{ $source_name }}
     namespace: {{ .Release.Namespace }}
 {{- end }}
 
 {{- define "common.classes.live_query_sinks"}}
   {{- $appValues := .Values.app -}}
+  {{- $queryValues := .Values.query -}}
   {{- if hasKey . "ObjectValues" }}
     {{- with .ObjectValues.app }}
       {{- $appValues = . }}
     {{- end }}
+    {{- with .ObjectValues.query }}
+      {{- $queryValues = . }}
+    {{- end }}
   {{- end }}
 
 
-  {{- range $type, $sink := $appValues.liveQuery.sinks }}
-    {{- $ObjectValues := dict "app" $appValues "sink" $sink "sink_type" $type }}
+  {{- range $type, $sink := $queryValues.sinks }}
+    {{- $ObjectValues := dict "app" $appValues "sink" $sink "sink_type" $type "query" $queryValues "source_name" $.ObjectValues.source_name }}
 
     {{- $_ := set $ "ObjectValues" $ObjectValues }}
     {{- if and $sink.enabled }}

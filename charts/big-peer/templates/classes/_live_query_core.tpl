@@ -10,9 +10,9 @@
   {{- $values := $appValues.liveQuery -}}
   {{- if and (hasKey $appValues "nameOverride") $appValues.nameOverride -}}
     {{- $app = $appValues.nameOverride -}}
-  {{- end -}}
+  {{ end -}}
 
-  {{- $id := .Values.id -}}
+  {{ $id := .Values.id }}
 ---
 apiVersion: cloud.app.ditto.live/v1alpha2
 kind: LiveQueryCore

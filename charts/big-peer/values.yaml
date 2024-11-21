@@ -49,19 +49,31 @@ global:
 
 apps:
   myApp:
-    enabled: true
+    enabled: false
     id: 891c1bdb-71c6-40d5-9374-128e467c367e # uuid generated via uuidgen 
 
     liveQuery:
-      enabled: true
-      queryFilterExpression: "true"
-      schema: untyped
-      sinks:
-        webhook:
+      enabled: false
+      queries:
+        - name: "all_the_things"
           enabled: true
-          url: "http://myapp.com/rimshot"
-        kafka:
+          queryFilterExpression: "true"
+          schema: untyped
+          sinks:
+            kafka:
+              enabled: true
+            webhook:
+              enabled: true
+              url: "http://myapp.com/rimshot"
+        - name: "send_to_hook"
           enabled: true
+          queryFilterExpression: "true"
+          schema: untyped
+          sinks:
+            webhook:
+              enabled: true
+              url: "http://myapp.com/rimshot"
+
 
 
 # global kafka cluster options
