@@ -7,10 +7,9 @@
       {{- $_ := set $ "ObjectValues" (dict "app" $appValues) -}}
 {{ include "common.classes.registryapp" $ }}
       {{- if $app.liveQuery.enabled -}}
-        {{- $_ := set $ "ObjectValues" (dict "app" $appValues) }}
 {{ include "common.classes.live_query_core" $ }}
 {{ include "common.classes.live_query_source" $ }}
-{{ include "common.classes.live_query_sink" $ }}
+{{ include "common.classes.live_query_sinks" $ }}
       {{- end -}}
     {{- end }}
   {{- end }}

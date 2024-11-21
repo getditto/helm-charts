@@ -26,7 +26,6 @@ app.kubernetes.io/name: {{ include "common.names.name" . }}
 app.kubernetes.io/instance: {{ .Release.Name }}
 {{- end -}}
 
-
 {{- define "common.labels.registryApp" -}}
 cloud.app.ditto.live/app-id: {{ .id | quote }}
 cloud.app.ditto.live/org-url: {{ .organizationUrl | default "not_used" | quote }}
