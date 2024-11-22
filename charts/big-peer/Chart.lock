@@ -29,5 +29,8 @@ dependencies:
 - name: live-query-resource-controller
   repository: oci://quay.io/ditto-external
   version: 0.1.0-002c59
-digest: sha256:241c4da54c53eaf4b53397243ca2fc133f304b2320e674e806dd8d74e5db7248
-generated: "2024-11-19T15:20:57.960082134-06:00"
+- name: kafka
+  repository: oci://quay.io/ditto-external
+  version: 0.2.2
+digest: sha256:19a75afb9b0614888ae53c320e68ccdee693ea6df38190aabef5c64d5e625151
+generated: "2024-11-22T13:35:49.233564704-05:00"
