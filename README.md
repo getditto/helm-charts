@@ -178,6 +178,36 @@ ditto?.let { ditto ->
 
 ```
 
+### Live Query Example
+
+Live Query can be enabled on big-peer cluster to allow users to stream transactions in real-time. to other systems.
+
+To enable this feature you will need to pre-define an app in the values file like below
+
+```yaml
+apps:
+  myApp:
+    enabled: true
+    id: 891c1bdb-71c6-40d5-9374-128e467c367e # uuid generated via uuidgen 
+
+    liveQuery:
+      enabled: true
+      queries:
+        - name: "all_the_things"
+          enabled: true
+          queryFilterExpression: "true"
+          schema: untyped
+          sinks:
+            kafka:
+              enabled: true
+            webhook:
+              enabled: true
+              url: "http://myapp.com/rimshot"
+```
+This will create an app with the given id and setup up a live query stream that streams all the data in that app to both a kafka topic and a webhook.
+
+The kafka topic can be consumed by any system in k8s using the created KafkaUser credentials or can be exposed outside using an ingress object much like exposing the big-peer itself.
+
 ### Big Peer to Big Peer communication
 
 With Two separate installations of the big peer helm chart in separate namespaces you can set them up to communicate with each other,
