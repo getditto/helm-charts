@@ -21,8 +21,8 @@ dependencies:
   repository: https://strimzi.io/charts
   version: 0.44.0
 - name: kafka
-  repository: oci://quay.io/ditto-external
-  version: 0.2.2
+  repository: https://getditto.github.io/helm-charts/
+  version: 0.3.0
 - name: dummy-auth-webhook
   repository: oci://quay.io/ditto-external
   version: 0.1.1
