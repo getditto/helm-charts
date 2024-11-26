@@ -1,0 +1,56 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Kafka
+release:
+  name: test
+templates:
+  - kafka.yaml
+tests:
+  - it: should render valid Kafka resource
+    set: {}
+    asserts:
+      - isKind:
+          of: Kafka
+      - matchRegex:
+          path: metadata.name
+          pattern: test-kafka
+      - exists:
+          path: spec
+      - exists:
+          path: spec.kafka
+      - exists:
+          path: spec.kafka.template
+
+  - it: should include annotations if specified
+    set:
+      additionalAnnotations:
+        argocd/sync-wave: 3
+        ditto/foo: "true"
+        k8s/baz: "false"
+    asserts:
+      - equal:
+          path: metadata.annotations["argocd/sync-wave"]
+          value: 3
+
+  - it: should include annotations if kraft is enabled
+    set:
+      kraft:
+        enabled: true
+    asserts:
+      - equal:
+          path: metadata.annotations["strimzi.io/kraft"]
+          value: enabled
+
+  - it: should include annotations if kraft is enabled AND annotations are specified
+    set:
+      additionalAnnotations:
+        argocd/sync-wave: 3
+        ditto/foo: "true"
+      kraft:
+        enabled: true
+    asserts:
+      - equal:
+          path: metadata.annotations["strimzi.io/kraft"]
+          value: enabled
+      - equal:
+          path: metadata.annotations["argocd/sync-wave"]
+          value: 3

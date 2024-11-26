@@ -1,0 +1,65 @@
+strimzi:
+  spreadingEnabled: true
+  allowDeleteTopics: false
+  volumeSize: 100Gi
+  resources:
+    requests:
+      cpu: "8"
+      memory: "8Gi"
+    limits:
+      cpu: "8"
+      memory: "8Gi"
+  zookeeper:
+    replicas: 1 # Single ZK in order to speed up bootstrap times & reduce resource usage
+    volumeSize: 10Gi
+    resources:
+      requests:
+        cpu: 4
+        memory: 8Gi
+      limits:
+        cpu: 4
+        memory: 8Gi
+  entityTopicOperator:
+    resources:
+      requests:
+        cpu: 1
+        memory: 500Mi
+      limits:
+        cpu: 1
+        memory: 500Mi
+  entityUserOperator:
+    resources:
+      requests:
+        cpu: 1
+        memory: 500Mi
+      limits:
+        cpu: 1
+        memory: 500Mi
+  cruiseControl:
+    enabled: true
+    resources:
+      requests:
+        cpu: 1
+        memory: 500Mi
+      limits:
+        cpu: 1
+        memory: 500Mi
+  kafkaExporter:
+    enabled: true
+    resources:
+      requests:
+        cpu: 1
+        memory: 1Gi
+      limits:
+        cpu: 1
+        memory: 1Gi
+
+nodeSelector:
+  app.ditto.live/tier: "benchmark"
+
+tolerations:
+  - key: app.ditto.live/purpose
+    value: "benchmark"
+    effect: NoSchedule
+
+waitForPostInstall: false

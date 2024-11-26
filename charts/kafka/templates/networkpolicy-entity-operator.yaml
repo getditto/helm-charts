@@ -1,0 +1,30 @@
+{{ $networkPolicies := .Values.networkPolicies.entityOperator }}
+{{ if $networkPolicies.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kafka.fullname" . }}-egress-entity-operator
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "kafka.labels" . | nindent 4 }}
+spec:
+  policyTypes:
+    {{- if not (empty $networkPolicies.ingress) }}
+    - Ingress
+    {{- end }}
+    - Egress
+  podSelector:
+    matchLabels:
+      {{- tpl (toYaml $networkPolicies.selectorLabels) . | nindent 6 }}
+  {{- if not (empty $networkPolicies.ingress) }}
+  ingress:
+    - from:
+        {{- tpl (toYaml $networkPolicies.ingress) . | nindent 8 }}
+      ports:
+        - port: 8080
+          protocol: TCP
+        - port: 8081
+          protocol: TCP
+  {{- end }}
+  egress:
+    {{- tpl (toYaml $networkPolicies.egress) . | nindent 4 }}
+{{ end }}

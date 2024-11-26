@@ -1,0 +1,259 @@
+strimzi:
+  spreadingEnabled: false
+  kafkaVersion: 3.3.2
+  interBrokerProtocolVersion: "3.3"
+  replicas: 1
+  rackAware: false
+  autoCreateTopics: false
+  allowDeleteTopics: true
+  logRetentionCheckInterval: 300000
+  additionalConfig: {}
+  deleteClaim: true
+  volumeSize: 10Gi
+  resources: {}
+  kafkaAntiAffinity: soft
+  zookeeper:
+    antiAffinity: soft
+    replicas: 1
+    deleteClaim: true
+    volumeSize: 10Gi
+    resources: {}
+  entityTopicOperator:
+    resources: {}
+  entityUserOperator:
+    resources: {}
+  cruiseControl:
+    enabled: false
+    resources: {}
+  kafkaExporter:
+    enabled: false
+    resources: {}
+  externalListener:
+    enabled: false
+
+  entityOperatorLabels: {}
+
+# enable kraft mode for dual use Kafka nodes in a common node pool
+kraft:
+  enabled: false
+  nodePool:
+    dualRoles: true
+    replicas: 1
+
+nodeSelector: {}
+
+tolerations: []
+
+monitoring:
+  prometheusRules:
+    enabled: false
+
+additionalAnnotations: {}
+
+# Network Policies, Ingress polices are built into strimzi charts, other network policies define the ingress in the template.
+networkPolicies:
+  # This is an ugly hack because of https://github.com/getditto/cloud-infra/issues/107
+  # to enable a graceful switch we make this available to be set to true
+  enableHack: true
+
+  cruiseControl:
+    enabled: false
+    selectorLabels:
+      strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+      strimzi.io/kind: Kafka
+      strimzi.io/name: '{{ include "kafka.fullname" . }}-cruise-control'
+    egress:
+      - to:
+          - podSelector:
+              matchLabels:
+                strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+                strimzi.io/kind: Kafka
+                strimzi.io/name: '{{ include "kafka.fullname" . }}-kafka'
+        ports:
+          # tcp-replication
+          - port: 9091
+      # Access to DNS
+      - to:
+          - namespaceSelector: {}
+            podSelector:
+              matchLabels:
+                k8s-app: kube-dns
+        ports:
+          - port: 1053
+            protocol: UDP
+          - port: 1053
+            protocol: TCP
+
+  kafka:
+    enabled: false
+    selectorLabels:
+      strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+      strimzi.io/kind: Kafka
+      strimzi.io/name: '{{ include "kafka.fullname" . }}-kafka'
+    egress:
+      - to:
+          - podSelector:
+              matchLabels:
+                strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+                strimzi.io/kind: Kafka
+                strimzi.io/name: '{{ include "kafka.fullname" . }}-kafka'
+        ports:
+          # tcp-controlplane
+          - port: 9090
+          # tcp-replication
+          - port: 9091
+      - to:
+          - podSelector:
+              matchLabels:
+                strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+                strimzi.io/kind: Kafka
+                strimzi.io/name: '{{ include "kafka.fullname" . }}-zookeeper'
+        ports:
+          # tcp-clustering
+          - port: 2181
+      # Access to DNS
+      - to:
+          - namespaceSelector: {}
+            podSelector:
+              matchLabels:
+                k8s-app: kube-dns
+        ports:
+          - port: 1053
+            protocol: UDP
+          - port: 1053
+            protocol: TCP
+
+  zookeeper:
+    enabled: false
+    selectorLabels:
+      strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+      strimzi.io/kind: Kafka
+      strimzi.io/name: '{{ include "kafka.fullname" . }}-zookeeper'
+    egress:
+      - to:
+          - podSelector:
+              matchLabels:
+                strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+                strimzi.io/kind: Kafka
+                strimzi.io/name: '{{ include "kafka.fullname" . }}-zookeeper'
+        ports:
+          # tcp-clustering
+          - port: 2888
+          # tcp-leader-election
+          - port: 3888
+          # tcp-clients
+          - port: 2181
+      # Access to DNS
+      - to:
+          - namespaceSelector: {}
+            podSelector:
+              matchLabels:
+                k8s-app: kube-dns
+        ports:
+          - port: 1053
+            protocol: UDP
+          - port: 1053
+            protocol: TCP
+
+  entityOperator:
+    enabled: false
+    selectorLabels:
+      strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+      strimzi.io/kind: Kafka
+      strimzi.io/name: '{{ include "kafka.fullname" . }}-entity-operator'
+    kubeApiAccess:
+      enabled: true
+      # We include a CNI as some network interfaces have some gotchas around accessing the kube API
+      cni: "cilium"
+    # We include an option for setting egress so that we can use services like vcluster to access the kube API.
+      egress:
+      - toEndpoints:
+          - matchLabels:
+              app: vcluster
+              io.kubernetes.pod.namespace: "{{ .Release.Namespace }}"
+        toPorts:
+          - ports:
+              - port: "8443"
+
+    # Ingress Rules for the Entity Operator currently any rules here will match both available ports
+    ingress:
+      # Allow Prometheus to scrape the metrics endpoint
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: monitoring
+        podSelector:
+          matchLabels:
+            app.kubernetes.io/instance: monitoring-prometheus
+
+    egress:
+      - to:
+          - podSelector:
+              matchLabels:
+                strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+                strimzi.io/kind: Kafka
+                strimzi.io/name: '{{ include "kafka.fullname" . }}-kafka'
+        ports:
+          # tcp-replication
+          - port: 9091
+      - to:
+          - podSelector:
+              matchLabels:
+                strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+                strimzi.io/kind: Kafka
+                strimzi.io/name: '{{ include "kafka.fullname" . }}-zookeeper'
+        ports:
+          # tcp-clients
+          - port: 2181
+      # Access to DNS
+      - to:
+          - namespaceSelector: {}
+            podSelector:
+              matchLabels:
+                k8s-app: kube-dns
+        ports:
+          - port: 1053
+            protocol: UDP
+          - port: 1053
+            protocol: TCP
+
+  kafkaExporter:
+    enabled: false
+    selectorLabels:
+      strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+      strimzi.io/kind: Kafka
+      strimzi.io/name: '{{ include "kafka.fullname" . }}-kafka-exporter'
+
+    # Ingress Rules for the kafkaExporter
+    ingress:
+      # Allow Prometheus to scrape the metrics endpoint
+      - namespaceSelector:
+          matchLabels:
+            kubernetes.io/metadata.name: monitoring
+        podSelector:
+          matchLabels:
+            app.kubernetes.io/instance: monitoring-prometheus
+
+    egress:
+      - to:
+          - podSelector:
+              matchLabels:
+                strimzi.io/cluster: '{{ include "kafka.fullname" . }}'
+                strimzi.io/kind: Kafka
+                strimzi.io/name: '{{ include "kafka.fullname" . }}-kafka'
+        ports:
+          # tcp-replication
+          - port: 9091
+      # Access to DNS
+      - to:
+          - namespaceSelector: {}
+            podSelector:
+              matchLabels:
+                k8s-app: kube-dns
+        ports:
+          - port: 1053
+            protocol: UDP
+          - port: 1053
+            protocol: TCP
+
+# Waits for post-install hook to complete before moving on
+waitForPostInstall: false

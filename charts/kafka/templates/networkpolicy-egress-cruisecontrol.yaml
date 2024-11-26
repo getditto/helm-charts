@@ -1,0 +1,17 @@
+{{ $networkPolicies := .Values.networkPolicies.cruiseControl }}
+{{ if $networkPolicies.enabled }}
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kafka.fullname" . }}-egress-cruise-control
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "kafka.labels" . | nindent 4 }}
+spec:
+  policyTypes:
+    - Egress
+  podSelector:
+    matchLabels:
+      {{- tpl (toYaml $networkPolicies.selectorLabels) . | nindent 6 }}
+  egress:
+    {{- tpl (toYaml $networkPolicies.egress) . | nindent 4 }}
+{{ end }}

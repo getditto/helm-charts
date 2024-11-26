@@ -1,0 +1,28 @@
+strimzi:
+  allowDeleteTopics: true
+  logRetentionCheckInterval: 5000
+
+# Network Policies, Ingress polices are built into strimzi charts, other network policies define the ingress in the template.
+networkPolicies:
+  # This is an ugly hack because of https://github.com/getditto/cloud-infra/issues/107
+  # to enable a graceful switch we make this available to be set to true
+  enableHack: false
+
+  entityOperator:
+    enabled: true
+
+    ingress: []
+
+  kafkaExporter:
+    enabled: true
+
+    ingress: []
+
+  cruise-control:
+    enabled: true
+
+  zookeeper:
+    enabled: true
+
+  kafka:
+    enabled: true

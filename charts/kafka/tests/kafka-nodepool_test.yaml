@@ -1,0 +1,31 @@
+# yaml-language-server: $schema=https://raw.githubusercontent.com/helm-unittest/helm-unittest/main/schema/helm-testsuite.json
+suite: Kafka
+release:
+  name: test
+templates:
+  - kafka-nodepool.yaml
+tests:
+  - it: should render valid KafkaNodePool resource
+    set:
+      kraft:
+        enabled: true
+        nodePool:
+          dualRoles: true
+    asserts:
+      - isKind:
+          of: KafkaNodePool
+      - matchRegex:
+          path: metadata.name
+          pattern: test-kafka
+      - exists:
+          path: spec
+      - exists:
+          path: spec.replicas
+      - exists:
+          path: spec.storage
+      - exists:
+          path: spec.template
+      - equal:
+          path: spec.template.persistentVolumeClaim.metadata.annotations["argocd.argoproj.io/sync-options"]
+          value: Delete=false
+

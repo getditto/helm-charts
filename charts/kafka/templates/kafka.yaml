@@ -1,0 +1,219 @@
+apiVersion: kafka.strimzi.io/v1beta2
+kind: Kafka
+metadata:
+  name: {{ include "kafka.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "kafka.labels" . | nindent 4 }}
+{{- if or .Values.kraft.enabled .Values.additionalAnnotations }}
+  annotations:
+{{- if or .Values.kraft.enabled }}
+    strimzi.io/node-pools: enabled
+    strimzi.io/kraft: enabled
+{{- end }}
+{{- if .Values.additionalAnnotations }}
+    {{ toYaml .Values.additionalAnnotations | nindent 4 }}
+{{- end }}
+{{- end }}
+spec:
+  kafka:
+    template:
+      pod:
+        metadata:
+          labels: {{ include "kafka.sharedLabels" . | nindent 12 }}
+        {{- if or .Values.nodeSelector .Values.strimzi.spreadingEnabled }}
+        affinity:
+        {{- if .Values.nodeSelector }}
+          {{- include "kafka.nodeAffinity" . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.strimzi.spreadingEnabled }}
+          {{- include "kafka.podAntiAffinity" (list "kafka" .Values.strimzi.kafkaAntiAffinity) | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.tolerations }}
+        tolerations: {{ toYaml .Values.tolerations | nindent 10 }}
+        {{- end }}
+{{- if .Values.strimzi.rackAware }}
+    rack:
+      topologyKey: topology.kubernetes.io/zone
+{{- end }}
+    version: {{ .Values.strimzi.kafkaVersion }}
+{{- if not (eq .Values.kraft.enabled true) }}
+    replicas: {{ .Values.strimzi.replicas }}
+{{- end }}
+{{- if .Values.strimzi.authorization }}
+    authorization:
+      type: {{ .Values.strimzi.authorization }}
+{{- end }}
+    listeners:
+      - name: plain
+        port: 9092
+        type: internal
+        tls: false
+      - name: tls
+        port: 9093
+        type: internal
+        tls: true
+        authentication:
+          type: tls
+{{- if .Values.strimzi.externalListener.enabled }}
+      - name: external
+        port: 9094
+        type: ingress
+        tls: true
+        authentication:
+          type: tls
+        configuration:
+          class: {{ .Values.strimzi.externalListener.ingressClass }}
+          bootstrap:
+            host: {{ tpl .Values.strimzi.externalListener.bootstrapHost . | quote }}
+            alternativeNames:
+            {{- range .Values.strimzi.alternateNames }}
+              - {{ tpl . $ | quote }}
+            {{- end }}
+          brokers:
+            {{- range $i, $e := until (int .Values.strimzi.replicas) }}
+            - broker: {{ $e }}
+              host: {{ tpl $.Values.strimzi.externalListener.brokerNameTemplate (merge (deepCopy $) (dict "brokerId" $e)) | quote }}
+            {{- end }}
+{{- end }}
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    config:
+      default.replication.factor: {{ .Values.strimzi.replicas }}
+      offsets.topic.replication.factor: {{ .Values.strimzi.replicas }}
+      transaction.state.log.replication.factor: {{ .Values.strimzi.replicas }}
+      transaction.state.log.min.isr: {{ max 1 (add 1 (div .Values.strimzi.replicas 2)) }}
+      {{ if not (eq .Values.kraft.enabled true) }}
+      inter.broker.protocol.version: {{ .Values.strimzi.interBrokerProtocolVersion | quote}}
+      {{- end }}
+      {{- if lt (float64 .Values.strimzi.interBrokerProtocolVersion) 3.0 }}
+      log.message.format.version: {{ .Values.strimzi.logMessageFormatVersion | quote }}
+      {{- end }}
+      log.retention.check.interval.ms: {{ .Values.strimzi.logRetentionCheckInterval }}
+      auto.create.topics.enable: {{ .Values.strimzi.autoCreateTopics | quote }}
+      delete.topic.enable: {{ .Values.strimzi.allowDeleteTopics | quote }}
+{{- if .Values.strimzi.rackAware }}
+      replica.selector.class: org.apache.kafka.common.replica.RackAwareReplicaSelector
+{{- end }}
+      {{- if .Values.strimzi.additionalConfig }}
+      {{ toYaml .Values.strimzi.additionalConfig | indent 6 }}
+      {{- end }}
+    resources:
+{{ toYaml .Values.strimzi.resources | indent 6 }}
+{{- if not (eq .Values.kraft.enabled true) }}
+    storage:
+      type: persistent-claim
+      size: {{ .Values.strimzi.volumeSize }}
+      deleteClaim: {{ .Values.strimzi.deleteClaim }}
+{{- end }}
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: {{ include "kafka.fullname" . }}-metrics
+          key: kafka-metrics-config.yml
+  {{- if not (eq .Values.kraft.enabled true) }}
+  zookeeper:
+    template:
+      pod:
+        metadata:
+          labels: {{ include "kafka.sharedLabels" . | nindent 12 }}
+        {{- if or .Values.nodeSelector .Values.strimzi.spreadingEnabled }}
+        affinity:
+        {{- if .Values.nodeSelector }}
+          {{- include "kafka.nodeAffinity" . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.strimzi.spreadingEnabled }}
+          {{- include "kafka.podAntiAffinity" (list "zookeeper" .Values.strimzi.zookeeper.antiAffinity) | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.tolerations }}
+        tolerations: {{ toYaml .Values.tolerations | nindent 10 }}
+        {{- end }}
+    replicas: {{ .Values.strimzi.zookeeper.replicas }}
+    resources:
+{{ toYaml .Values.strimzi.zookeeper.resources | indent 6 }}
+    readinessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    livenessProbe:
+      initialDelaySeconds: 15
+      timeoutSeconds: 5
+    storage:
+      type: persistent-claim
+      size: {{ .Values.strimzi.zookeeper.volumeSize }}
+      deleteClaim: {{ .Values.strimzi.zookeeper.deleteClaim }}
+    metricsConfig:
+      type: jmxPrometheusExporter
+      valueFrom:
+        configMapKeyRef:
+          name: {{ include "kafka.fullname" . }}-metrics
+          key: zookeeper-metrics-config.yml
+  {{- end }}
+  entityOperator:
+    template:
+      pod:
+        metadata:
+          labels: {{ include "kafka.entityOperatorLabels" . | nindent 12 }}
+        {{- if or .Values.nodeSelector .Values.strimzi.spreadingEnabled }}
+        affinity:
+        {{- if .Values.nodeSelector }}
+          {{- include "kafka.nodeAffinity" . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.strimzi.spreadingEnabled }}
+          {{- include "kafka.podAntiAffinity" (list "entity-operator" "soft") | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.tolerations }}
+        tolerations: {{ toYaml .Values.tolerations | nindent 10 }}
+        {{- end }}
+    topicOperator:
+{{ toYaml .Values.strimzi.entityTopicOperator | indent 6 }}
+    userOperator:
+{{ toYaml .Values.strimzi.entityUserOperator | indent 6 }}
+  {{- if .Values.strimzi.kafkaExporter.enabled }}
+  kafkaExporter:
+    topicRegex: ".*"
+    groupRegex: ".*"
+    resources: {{ toYaml .Values.strimzi.kafkaExporter.resources | nindent 6 }}
+    template:
+      pod:
+        metadata:
+          labels: {{ include "kafka.sharedLabels" . | nindent 12 }}
+        {{- if or .Values.nodeSelector .Values.strimzi.spreadingEnabled }}
+        affinity:
+        {{- if .Values.nodeSelector }}
+          {{- include "kafka.nodeAffinity" . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.strimzi.spreadingEnabled }}
+          {{- include "kafka.podAntiAffinity" (list "kafka-exporter" "soft") | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.tolerations }}
+        tolerations: {{ toYaml .Values.tolerations | nindent 10 }}
+        {{- end }}
+  {{- end }}
+  {{- if .Values.strimzi.cruiseControl.enabled }}
+  cruiseControl:
+    resources: {{ toYaml .Values.strimzi.cruiseControl.resources | nindent 6 }}
+    template:
+      pod:
+        metadata:
+          labels: {{ include "kafka.sharedLabels" . | nindent 12 }}
+        {{- if or .Values.nodeSelector .Values.strimzi.spreadingEnabled }}
+        affinity:
+        {{- if .Values.nodeSelector }}
+          {{- include "kafka.nodeAffinity" . | nindent 10 }}
+        {{- end }}
+        {{- if .Values.strimzi.spreadingEnabled }}
+          {{- include "kafka.podAntiAffinity" (list "cruise-control" "soft") | nindent 10 }}
+        {{- end }}
+        {{- end }}
+        {{- if .Values.tolerations }}
+        tolerations: {{ toYaml .Values.tolerations | nindent 10 }}
+        {{- end }}
+  {{- end }}
