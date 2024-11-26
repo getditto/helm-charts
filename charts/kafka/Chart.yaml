@@ -1,0 +1,6 @@
+apiVersion: v2
+description: Setup a Kafka cluster
+name: kafka
+version: 0.3.0
+type: application
+dependencies: []

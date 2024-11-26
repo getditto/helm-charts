@@ -1,0 +1,84 @@
+{{- if eq .Values.kraft.enabled true }}
+{{- if eq .Values.kraft.nodePool.dualRoles true }}
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: {{ include "kafka.fullname" . }}
+  namespace: {{ .Release.Namespace }}
+  labels:
+    strimzi.io/cluster: {{ include "kafka.fullname" . }}
+    {{- include "kafka.labels" . | nindent 4 }}
+spec:
+  replicas: {{ default 1 .Values.kraft.nodePool.replicas }}
+  roles:
+    - controller
+    - broker
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: {{ default "100Gi" .Values.kraft.nodePool.storageSize  }}
+        deleteClaim: false
+        kraftMetadata: shared
+  template:
+    persistentVolumeClaim:
+      metadata:
+        annotations:
+          # Stop ArgoCD deleting PVCs that don't have an OwnerReference
+          argocd.argoproj.io/sync-options: Delete=false
+{{- else }}
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: {{ include "kafka.fullname" . }}-controller
+  namespace: {{ .Release.Namespace }}
+  labels:
+    strimzi.io/cluster: {{ include "kafka.fullname" . }}
+    {{- include "kafka.labels" . | nindent 4 }}
+spec:
+  replicas: {{ coalesce .Values.kraft.nodePool.controllerReplicas .Values.kraft.nodePool.replicas 1 }}
+  roles:
+    - controller
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: {{ default "100Gi" .Values.kraft.nodePool.storageSize  }}
+        deleteClaim: false
+        kraftMetadata: shared
+  template:
+    persistentVolumeClaim:
+      metadata:
+        annotations: 
+          argocd.argoproj.io/sync-options: Delete=false
+---
+
+apiVersion: kafka.strimzi.io/v1beta2
+kind: KafkaNodePool
+metadata:
+  name: {{ include "kafka.fullname" . }}-broker
+  namespace: {{ .Release.Namespace }}
+  labels:
+    strimzi.io/cluster: {{ include "kafka.fullname" . }}
+    {{- include "kafka.labels" . | nindent 4 }}
+spec:
+  replicas: {{ coalesce .Values.kraft.nodePool.brokerReplicas .Values.kraft.nodePool.replicas 1 }}
+  roles:
+    - broker
+  storage:
+    type: jbod
+    volumes:
+      - id: 0
+        type: persistent-claim
+        size: {{ default "100Gi" .Values.kraft.nodePool.storageSize  }}
+        deleteClaim: false
+        kraftMetadata: shared
+  template:
+    persistentVolumeClaim:
+      metadata:
+        annotations: 
+          argocd.argoproj.io/sync-options: Delete=false
+{{- end }}
+{{- end }}

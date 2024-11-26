@@ -1,0 +1,32 @@
+# This is an ugly hack because of https://github.com/getditto/cloud-infra/issues/107
+{{ if .Values.networkPolicies.enableHack }}
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kafka.fullname" . }}-allow-all-kafka-policy
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      strimzi.io/name: {{ include "kafka.fullname" . }}-kafka
+  policyTypes:
+    - Ingress
+  ingress:
+    - {}
+
+---
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: {{ include "kafka.fullname" . }}-allow-all-zk-policy
+  namespace: {{ .Release.Namespace }}
+spec:
+  podSelector:
+    matchLabels:
+      strimzi.io/name: {{ include "kafka.fullname" . }}-zookeeper
+  policyTypes:
+    - Ingress
+  ingress:
+    - {}
+{{ end }}

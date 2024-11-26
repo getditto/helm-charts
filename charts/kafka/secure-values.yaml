@@ -1,0 +1,10 @@
+baseDomain: streaming-dev.ditto.live
+strimzi:
+  authorization: simple
+  externalListener:
+    enabled: true
+    ingressClass: public-streaming
+    bootstrapHost: '{{ printf "%s-live-query-transport-bootstrap.%s" .Release.Namespace .Values.baseDomain }}'
+    alternateNames:
+      - '{{ printf "*.%s" .Values.baseDomain }}'
+    brokerNameTemplate: '{{ printf "%s-live-query-transport-broker-%d.%s" .Release.Namespace $.brokerId $.Values.baseDomain }}'

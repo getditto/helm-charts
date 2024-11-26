@@ -1,0 +1,23 @@
+{{ $networkPolicies := .Values.networkPolicies.entityOperator }}
+{{ $kubeApiAccess := $networkPolicies.kubeApiAccess }}
+{{- if and (eq $networkPolicies.enabled true) (eq $kubeApiAccess.enabled true) -}}
+{{- if and (eq $kubeApiAccess.cni "cilium") -}}
+# Access KubeAPI for entity operator
+# Cilium does not allow the use of CIDR ranges in egress rules when both ends are controlled by Cilium.
+# The kube apiserver is controlled by Cilium, so we can use the toEntities field to allow access to it.
+# @todo a flag should be added to the helm chart to allow the user to choose between cilium and network policy.
+---
+apiVersion: cilium.io/v2
+kind: CiliumNetworkPolicy
+metadata:
+  name: {{ include "kafka.fullname" . }}-egress-entity-operator
+  namespace: {{ .Release.Namespace }}
+  labels: {{ include "kafka.labels" . | nindent 4 }}
+spec:
+  endpointSelector:
+    matchLabels:
+      {{- tpl (toYaml $networkPolicies.selectorLabels) . | nindent 6 }}
+  egress:
+    {{- tpl ($kubeApiAccess.egress | toYaml) . | nindent 4 }}
+{{- end -}}
+{{- end -}}
