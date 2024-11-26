@@ -1,0 +1,10 @@
+remote: origin
+target-branch: main
+exclude-deprecated: true
+chart-dirs:
+  - charts
+
+helm-extra-args: --timeout 600s
+validate-maintainers: false
+additional-commands:
+  - "helm unittest -f \"tests/*.yaml\" {{ .Path }}"

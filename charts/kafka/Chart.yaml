@@ -1,6 +1,16 @@
 apiVersion: v2
-description: Setup a Kafka cluster
+description: Setup a Kafka cluster using Strimzi operator
 name: kafka
-version: 0.3.0
+version: 0.3.1
 type: application
 dependencies: []
+keywords:
+  - ditto
+  - bigpeer
+  - kafka
+  - strimzi
+sources:
+  - https://github.com/getditto/ditto-helm
+maintainers:
+  - name: getditto
+    email: charts@ditto.live
