@@ -963,4 +963,14 @@ entries:
     urls:
     - https://github.com/getditto/helm-charts/releases/download/big-peer-0.0.1/big-peer-0.0.1.tgz
     version: 0.0.1
-generated: "2024-11-22T18:39:21.248110466Z"
+  kafka:
+  - apiVersion: v2
+    created: "2024-11-26T07:28:36.068115031Z"
+    description: Setup a Kafka cluster
+    digest: 0f362254fc74f0cd5fc8cff202aa755a6a97e62f12344f3b370fdae6efa32637
+    name: kafka
+    type: application
+    urls:
+    - https://github.com/getditto/helm-charts/releases/download/kafka-0.3.0/kafka-0.3.0.tgz
+    version: 0.3.0
+generated: "2024-11-26T07:28:36.068187856Z"
