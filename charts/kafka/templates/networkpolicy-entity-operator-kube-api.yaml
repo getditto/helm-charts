@@ -12,6 +12,10 @@ kind: CiliumNetworkPolicy
 metadata:
   name: {{ include "kafka.fullname" . }}-egress-entity-operator
   namespace: {{ .Release.Namespace }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+    {{ toYaml .Values.additionalAnnotations | nindent 4 }}
+{{- end }}
   labels: {{ include "kafka.labels" . | nindent 4 }}
 spec:
   endpointSelector:

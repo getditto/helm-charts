@@ -5,6 +5,10 @@ kind: KafkaNodePool
 metadata:
   name: {{ include "kafka.fullname" . }}
   namespace: {{ .Release.Namespace }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+    {{ toYaml .Values.additionalAnnotations | nindent 4 }}
+{{- end }}
   labels:
     strimzi.io/cluster: {{ include "kafka.fullname" . }}
     {{- include "kafka.labels" . | nindent 4 }}
@@ -33,6 +37,10 @@ kind: KafkaNodePool
 metadata:
   name: {{ include "kafka.fullname" . }}-controller
   namespace: {{ .Release.Namespace }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+    {{ toYaml .Values.additionalAnnotations | nindent 4 }}
+{{- end }}
   labels:
     strimzi.io/cluster: {{ include "kafka.fullname" . }}
     {{- include "kafka.labels" . | nindent 4 }}
@@ -60,6 +68,10 @@ kind: KafkaNodePool
 metadata:
   name: {{ include "kafka.fullname" . }}-broker
   namespace: {{ .Release.Namespace }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+    {{ toYaml .Values.additionalAnnotations | nindent 4 }}
+{{- end }}
   labels:
     strimzi.io/cluster: {{ include "kafka.fullname" . }}
     {{- include "kafka.labels" . | nindent 4 }}
