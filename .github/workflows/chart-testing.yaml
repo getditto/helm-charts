@@ -16,6 +16,12 @@ jobs:
         with:
           fetch-depth: 0
 
+      - name: add repos
+        run: |
+          helm repo add cert-manager https://charts.jetstack.io
+          helm repo add kafka https://strimzi.io/charts
+          helm repo add ditto-helm-charts https://getditto.github.io/helm-charts/
+
       - name: Install dependencies
         run: |
           helm plugin install https://github.com/helm-unittest/helm-unittest.git
