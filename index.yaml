@@ -1143,6 +1143,25 @@ entries:
     version: 0.0.1
   kafka:
   - apiVersion: v2
+    created: "2024-11-27T02:19:46.349478017Z"
+    description: Setup a Kafka cluster using Strimzi operator
+    digest: 999e6c9df8964d9127317e7ebae0bcb4b2344398883e7dbaca4d60418910e754
+    keywords:
+    - ditto
+    - bigpeer
+    - kafka
+    - strimzi
+    maintainers:
+    - email: charts@ditto.live
+      name: getditto
+    name: kafka
+    sources:
+    - https://github.com/getditto/ditto-helm
+    type: application
+    urls:
+    - https://github.com/getditto/helm-charts/releases/download/kafka-0.3.3/kafka-0.3.3.tgz
+    version: 0.3.3
+  - apiVersion: v2
     created: "2024-11-27T01:47:43.176524595Z"
     description: Setup a Kafka cluster using Strimzi operator
     digest: 8ae9358764106686da4633b470b3f04d81abc08b6a15789429269ac1b37cb27f
@@ -1189,4 +1208,4 @@ entries:
     urls:
     - https://github.com/getditto/helm-charts/releases/download/kafka-0.3.0/kafka-0.3.0.tgz
     version: 0.3.0
-generated: "2024-11-27T02:11:09.101867078Z"
+generated: "2024-11-27T02:19:46.349529834Z"
