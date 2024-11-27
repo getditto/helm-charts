@@ -1,7 +1,7 @@
 apiVersion: v2
 description: Setup a Kafka cluster using Strimzi operator
 name: kafka
-version: 0.3.2
+version: 0.3.3
 type: application
 dependencies: []
 keywords:

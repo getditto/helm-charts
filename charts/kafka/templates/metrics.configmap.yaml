@@ -4,6 +4,10 @@ apiVersion: v1
 metadata:
   name: {{ include "kafka.fullname" . }}-metrics
   namespace: {{ .Release.Namespace }}
+{{- if .Values.additionalAnnotations }}
+  annotations:
+    {{ toYaml .Values.additionalAnnotations | nindent 4 }}
+{{- end }}
   labels: {{ include "kafka.labels" . | nindent 6}}
 data:
   kafka-metrics-config.yml: |
