@@ -75,7 +75,7 @@ dependencies:
     tags:
       - kafka-operator
   - name: kafka
-    version: "0.3.0"
+    version: "0.3.2"
     repository: "https://getditto.github.io/helm-charts/"
     alias: kafka
     condition: kafka-cluster.enabled
@@ -96,7 +96,7 @@ dependencies:
       - live-query
   - name: kafka
     alias: live-query-kafka
-    version: "0.3.0"
+    version: "0.3.2"
     repository: "https://getditto.github.io/helm-charts/"
     condition: live-query.enabled
     tags:
