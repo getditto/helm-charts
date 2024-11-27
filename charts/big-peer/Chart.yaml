@@ -101,4 +101,3 @@ dependencies:
     condition: live-query.enabled
     tags:
       - kafka
-

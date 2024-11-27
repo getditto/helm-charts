@@ -6,7 +6,7 @@ global:
   debug: false
   trace: false
 
-  #Create a storage class for local k8s clusters or k8s clusters that do not use dynamic provisioners out of box
+  # Create a storage class for local k8s clusters or k8s clusters that do not use dynamic provisioners out of box
   # Default provisioner is for rancher cluster
   # Disable if you have a k8s cluster with a default dynamic provisioner
   storageClass:
@@ -50,7 +50,7 @@ global:
 apps:
   myApp:
     enabled: false
-    id: 891c1bdb-71c6-40d5-9374-128e467c367e # uuid generated via uuidgen 
+    id: 891c1bdb-71c6-40d5-9374-128e467c367e  # uuid generated via uuidgen
 
     liveQuery:
       enabled: false
@@ -74,8 +74,6 @@ apps:
               enabled: true
               url: "http://myapp.com/rimshot"
 
-
-
 # global kafka cluster options
 kafka:
   # enable kraft mode for dual use Kafka nodes in a common node pool
@@ -87,7 +85,7 @@ kafka:
 
   # disable kafka supporting services that are not required
   strimzi:
-    #interBrokerProtocolVersion: 3.8.0
+    # interBrokerProtocolVersion: 3.8.0
     kafkaVersion: 3.8.0
     kafkaExporter:
       enabled: false
@@ -120,15 +118,15 @@ ingress:
 
     # -- Set the ingressClass that is used for this ingress.
     # Requires Kubernetes >=1.19
-    ingressClassName: # "traefik"
+    ingressClassName:  # "traefik"
 
     ## Configure the hosts for the ingress
     hosts:
-      - # -- Host address. Helm template can be passed.
+      -  # -- Host address. Helm template can be passed.
         host: chart-example.local
         ## Configure the paths for the host
         paths:
-          - # -- path.  helm template can be passed.
+          -  # -- path.  helm template can be passed.
             path: /_ditto
             # -- ignored if not kubeversion >= 1.14-0
             pathtype: prefix
@@ -138,7 +136,7 @@ ingress:
               # -- overrides the service port reference for this path
               port: 8080
 
-          - # -- path.  helm template can be passed.
+          -  # -- path.  helm template can be passed.
             path: /
             # -- ignored if not kubeversion >= 1.14-0
             pathtype: prefix
@@ -226,7 +224,7 @@ hades:
     # If not set and create is true, a name is generated using the fullname template
     name: ""
 
-  #Service
+  # Service
   service:
     type: ClusterIP
     port: 80
@@ -296,7 +294,7 @@ hydra-consul:
         {
           "leave_on_terminate": true
         }
-  #Enables you to configure network access to the components enabled in the hydra-consul install.
+  # Enables you to configure network access to the components enabled in the hydra-consul install.
   networkPolicies:
     enabled: false
     ingress:
@@ -628,8 +626,8 @@ hydra-subscription:
             "sharedToken": "test",
             "permission":
               {
-                "read": { "everything": true, "queriesByCollection": {} },
-                "write": { "everything": true, "queriesByCollection": {} },
+                "read": {"everything": true, "queriesByCollection": {}},
+                "write": {"everything": true, "queriesByCollection": {}},
               },
           },
       }
@@ -866,7 +864,7 @@ live-query-kafka:
     authorization: simple
     external: true
 
-    #interBrokerProtocolVersion: 3.8.0
+    # interBrokerProtocolVersion: 3.8.0
     kafkaVersion: 3.8.0
     kafkaExporter:
       enabled: false
