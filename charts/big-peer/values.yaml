@@ -529,7 +529,7 @@ hydra-subscription:
     kafkaBootstrapHost: "{{ tpl $.Values.kafka.clusterName . }}-kafka-brokers.{{ tpl $.Values.kafka.namespace . }}:9092"
     tracingHost: ""
     consulHttpAddr: ditto-hydra-consul-server:8500
-    authAPIKeyServerUrl: "http://ditto-bp-dummy-auth-webhook.service"
+    authAPIKeyServerUrl: "http://ditto-bp-dummy-auth-webhook"
 
   additionalEnv: {}
 
