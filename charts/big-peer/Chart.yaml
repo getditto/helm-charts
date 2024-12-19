@@ -15,7 +15,7 @@ home: https://docs.ditto.live/
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.2.13
+version: 1.0.0
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
@@ -31,49 +31,15 @@ maintainers:
   - name: Ditto Live
     email: charts@ditto.live
 dependencies:
-  # Both longhorn and minio are used for storage, longhorn seems to be more robust
-  - name: hades
-    version: "1.39.2-4b6e4e"
-    repository: "oci://quay.io/ditto-external"
-    condition: hades.enabled
-    tags:
-      - hades
-  - name: hydra-consul
-    version: "0.1.0"
-    repository: "oci://quay.io/ditto-external"
-    condition: hydra-consul.enabled
-    tags:
-      - hydra-consul
-  - name: hydra-store
-    version: "1.39.2-4b6e4e"
-    repository: "oci://quay.io/ditto-external"
-    condition: hydra-store.enabled
-    tags:
-      - hydra-store
-  - name: hydra-subscription
-    version: "1.39.2-4b6e4e"
-    repository: "oci://quay.io/ditto-external"
-    condition: hydra-subscription.enabled
-    tags:
-      - hydra-subscription
-  - name: service-token-validator
-    version: "0.2.1"
-    repository: "oci://quay.io/ditto-external"
-    condition: service-token-validator.enabled
-    tags:
-      - service-token-validator
+  - name: common
+    repository: https://library-charts.k8s-at-home.com
+    version: 4.5.2
   - name: cert-manager
     version: "1.10.1"
     repository: "https://charts.jetstack.io"
     condition: cert-manager.enabled
     tags:
       - cert-manager
-  - name: strimzi-kafka-operator
-    version: "0.44.0"
-    repository: "https://strimzi.io/charts"
-    condition: strimzi-kafka-operator.enabled
-    tags:
-      - kafka-operator
   - name: kafka
     version: "0.3.3"
     repository: "https://getditto.github.io/helm-charts/"
@@ -81,12 +47,6 @@ dependencies:
     condition: kafka-cluster.enabled
     tags:
       - kafka
-  - name: dummy-auth-webhook
-    repository: "oci://quay.io/ditto-external"
-    condition: dummy-auth-webhook.enabled
-    version: "0.1.1"
-    tags:
-      - dummy-auth-webhook
   - name: live-query-resource-controller
     alias: live-query
     repository: "oci://quay.io/ditto-external"
