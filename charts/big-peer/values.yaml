@@ -76,6 +76,8 @@ apps:
 
 # global kafka cluster options
 kafka:
+  networkPolicies: 
+    enabled: false
   # enable kraft mode for dual use Kafka nodes in a common node pool
   kraft:
     enabled: false
@@ -851,6 +853,8 @@ live-query:
     CDC_HEARTBEAT_KAFKA_REPLICATION_FACTOR: 1
 
 live-query-kafka:
+  networkPolicies: 
+    enabled: false
   # enable kraft mode for dual use Kafka nodes in a common node pool
   kraft:
     enabled: false
