@@ -1,0 +1,1051 @@
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: dittoapps.ditto.live
+spec:
+  group: ditto.live
+  names:
+    categories: []
+    kind: DittoApp
+    plural: dittoapps
+    shortNames: []
+    singular: dittoapp
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns: []
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Auto-generated derived type for AppSpec via `CustomResource`
+        properties:
+          spec:
+            properties:
+              api:
+                properties:
+                  enabled:
+                    type: boolean
+                  keys:
+                    items:
+                      type: string
+                    type: array
+                required:
+                - enabled
+                - keys
+                type: object
+              deploymentRef:
+                description: LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.
+                properties:
+                  name:
+                    description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                    type: string
+                type: object
+            required:
+            - api
+            - deploymentRef
+            type: object
+          status:
+            nullable: true
+            type: object
+        required:
+        - spec
+        title: App
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: dittodeployments.ditto.live
+spec:
+  group: ditto.live
+  names:
+    categories: []
+    kind: DittoDeployment
+    plural: dittodeployments
+    shortNames:
+    - ddep
+    singular: dittodeployment
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns: []
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Auto-generated derived type for DeploymentSpec via `CustomResource`
+        properties:
+          spec:
+            properties:
+              api:
+                properties:
+                  image:
+                    description: The container image used to run the workload's pods.
+                    type: string
+                  imagePullPolicy:
+                    description: The image pull policy for containers and the tag of the image affect when the kubelet attempts to pull (download) the specified image.
+                    nullable: true
+                    type: string
+                  imagePullSecrets:
+                    description: List of references to secrets in the same namespace to use for pulling any of the images used by this workload.
+                    items:
+                      description: LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                          type: string
+                      type: object
+                    nullable: true
+                    type: array
+                  replicas:
+                    description: The number of api server pods to run. Defaults to `1`.
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 0.0
+                    nullable: true
+                    type: integer
+                  resources:
+                    description: 'Resources requirements for the workload pod''s containers. More info: <https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/>.'
+                    nullable: true
+                    properties:
+                      claims:
+                        description: |-
+                          Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+                          This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+                          This field is immutable. It can only be set for containers.
+                        items:
+                          description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                          properties:
+                            name:
+                              description: Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        type: array
+                      limits:
+                        additionalProperties:
+                          description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                          type: string
+                        description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                      requests:
+                        additionalProperties:
+                          description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                          type: string
+                        description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                    type: object
+                  storage:
+                    description: Configuration for the workload pod's disk-based persistence.
+                    properties:
+                      size:
+                        description: A representation of memory quantities in SI decimal or power-of-two binary prefix formats. The smallest supported value is 0 bytes, and the largest is 15 exabytes.
+                        example: 512Ki
+                        maxLength: 63
+                        minLength: 1
+                        pattern: ^([0-9]*[.])?[0-9]+([kMGTPE]|[KMGTPE]i)$
+                        type: string
+                      storage_class_name:
+                        maxLength: 63
+                        minLength: 1
+                        nullable: true
+                        type: string
+                    required:
+                    - size
+                    type: object
+                required:
+                - image
+                - storage
+                type: object
+              auth:
+                properties:
+                  keys:
+                    description: References to the various key pairs used for device, in-band, and JWT authentication.
+                    properties:
+                      ca:
+                        description: The private key to use as the certificate authority when signing offline peer-to-peer device certificates.
+                        oneOf:
+                        - required:
+                          - secretRef
+                        properties:
+                          secretRef:
+                            description: |-
+                              A reference to a [`Secret`] containing the public/private key pair components.
+
+                              [`Secret`]: ditto_kube::k8s::corev1::Secret
+                            properties:
+                              certificate:
+                                description: The `Secret` property name to use as the public key.
+                                nullable: true
+                                type: string
+                              key:
+                                description: The `Secret` property name to use as the private key.
+                                nullable: true
+                                type: string
+                              name:
+                                description: |-
+                                  The name of the `Secret` containing the key pair.
+
+                                  It must reside in the same namespace as the workload.
+                                type: string
+                              optional:
+                                description: Specify if the `Secret` or the `certificate` or `key` property names must be defined.
+                                nullable: true
+                                type: boolean
+                            required:
+                            - name
+                            type: object
+                        type: object
+                      inBand:
+                        description: The private key to use for in-band key authentication.
+                        oneOf:
+                        - required:
+                          - secretRef
+                        properties:
+                          secretRef:
+                            description: |-
+                              A reference to a [`Secret`] containing the public/private key pair components.
+
+                              [`Secret`]: ditto_kube::k8s::corev1::Secret
+                            properties:
+                              certificate:
+                                description: The `Secret` property name to use as the public key.
+                                nullable: true
+                                type: string
+                              key:
+                                description: The `Secret` property name to use as the private key.
+                                nullable: true
+                                type: string
+                              name:
+                                description: |-
+                                  The name of the `Secret` containing the key pair.
+
+                                  It must reside in the same namespace as the workload.
+                                type: string
+                              optional:
+                                description: Specify if the `Secret` or the `certificate` or `key` property names must be defined.
+                                nullable: true
+                                type: boolean
+                            required:
+                            - name
+                            type: object
+                        type: object
+                      jwt:
+                        description: The key to use for JWT authentication.
+                        oneOf:
+                        - required:
+                          - secretRef
+                        properties:
+                          secretRef:
+                            description: |-
+                              A reference to a [`Secret`] containing the public/private key pair components.
+
+                              [`Secret`]: ditto_kube::k8s::corev1::Secret
+                            properties:
+                              certificate:
+                                description: The `Secret` property name to use as the public key.
+                                nullable: true
+                                type: string
+                              key:
+                                description: The `Secret` property name to use as the private key.
+                                nullable: true
+                                type: string
+                              name:
+                                description: |-
+                                  The name of the `Secret` containing the key pair.
+
+                                  It must reside in the same namespace as the workload.
+                                type: string
+                              optional:
+                                description: Specify if the `Secret` or the `certificate` or `key` property names must be defined.
+                                nullable: true
+                                type: boolean
+                            required:
+                            - name
+                            type: object
+                        type: object
+                    required:
+                    - ca
+                    - inBand
+                    - jwt
+                    type: object
+                  providers:
+                    additionalProperties:
+                      description: This describes the different providers available for an application in their auth config. Today we only support one type of provider, the `tokenwebhook`, but plan on providing many more.
+                      oneOf:
+                      - required:
+                        - type
+                        - webhookUrl
+                      properties:
+                        type:
+                          enum:
+                          - tokenWebhook
+                          type: string
+                        webhookUrl:
+                          format: uri
+                          type: string
+                      type: object
+                    default: {}
+                    description: A mapping between auth provider names and corresponding provider configurations.
+                    type: object
+                required:
+                - keys
+                type: object
+              network:
+                properties:
+                  hostname:
+                    description: The fully qualified domain name of a network host that will be provisioned as an Ingress rule used to route traffic into subscription and api servers.
+                    maxLength: 253
+                    minLength: 1
+                    type: string
+                required:
+                - hostname
+                type: object
+              store:
+                properties:
+                  hashingScheme:
+                    description: The hashing scheme used to assign data to partitions.
+                    type: string
+                  image:
+                    description: The container image used to run the workload's pods.
+                    type: string
+                  imagePullPolicy:
+                    description: The image pull policy for containers and the tag of the image affect when the kubelet attempts to pull (download) the specified image.
+                    nullable: true
+                    type: string
+                  imagePullSecrets:
+                    description: List of references to secrets in the same namespace to use for pulling any of the images used by this workload.
+                    items:
+                      description: LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                          type: string
+                      type: object
+                    nullable: true
+                    type: array
+                  partitions:
+                    description: How many partitions will the keyspace be split into. Each partition is the single source for a sub-range of the total keyspace, allowing load to be spread across partitions.
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 0.0
+                    type: integer
+                  replicas:
+                    description: How many times each partition's keyspace will be replicated. Replicas are the actual servers responsible for the data of a partition's assigned keyspace. Multiple replicas can be used for fault tolerance, load sharing, and performance.
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 0.0
+                    type: integer
+                  resources:
+                    description: 'Resources requirements for the workload pod''s containers. More info: <https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/>.'
+                    nullable: true
+                    properties:
+                      claims:
+                        description: |-
+                          Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+                          This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+                          This field is immutable. It can only be set for containers.
+                        items:
+                          description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                          properties:
+                            name:
+                              description: Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        type: array
+                      limits:
+                        additionalProperties:
+                          description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                          type: string
+                        description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                      requests:
+                        additionalProperties:
+                          description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                          type: string
+                        description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                    type: object
+                  storage:
+                    description: Configuration for the workload pod's disk-based persistence.
+                    properties:
+                      size:
+                        description: A representation of memory quantities in SI decimal or power-of-two binary prefix formats. The smallest supported value is 0 bytes, and the largest is 15 exabytes.
+                        example: 512Ki
+                        maxLength: 63
+                        minLength: 1
+                        pattern: ^([0-9]*[.])?[0-9]+([kMGTPE]|[KMGTPE]i)$
+                        type: string
+                      storage_class_name:
+                        maxLength: 63
+                        minLength: 1
+                        nullable: true
+                        type: string
+                    required:
+                    - size
+                    type: object
+                required:
+                - hashingScheme
+                - image
+                - partitions
+                - replicas
+                - storage
+                type: object
+              subscriptions:
+                properties:
+                  image:
+                    description: The container image used to run the workload's pods.
+                    type: string
+                  imagePullPolicy:
+                    description: The image pull policy for containers and the tag of the image affect when the kubelet attempts to pull (download) the specified image.
+                    nullable: true
+                    type: string
+                  imagePullSecrets:
+                    description: List of references to secrets in the same namespace to use for pulling any of the images used by this workload.
+                    items:
+                      description: LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.
+                      properties:
+                        name:
+                          description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                          type: string
+                      type: object
+                    nullable: true
+                    type: array
+                  replicas:
+                    description: The number of subscription server pods to run. Defaults to 1.
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 0.0
+                    nullable: true
+                    type: integer
+                  resources:
+                    description: 'Resources requirements for the workload pod''s containers. More info: <https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/>.'
+                    nullable: true
+                    properties:
+                      claims:
+                        description: |-
+                          Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+                          This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+                          This field is immutable. It can only be set for containers.
+                        items:
+                          description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                          properties:
+                            name:
+                              description: Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+                              type: string
+                          required:
+                          - name
+                          type: object
+                        type: array
+                      limits:
+                        additionalProperties:
+                          description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                          type: string
+                        description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                      requests:
+                        additionalProperties:
+                          description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                          type: string
+                        description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                        type: object
+                    type: object
+                  storage:
+                    description: Configuration for the workload pod's disk-based persistence.
+                    properties:
+                      size:
+                        description: A representation of memory quantities in SI decimal or power-of-two binary prefix formats. The smallest supported value is 0 bytes, and the largest is 15 exabytes.
+                        example: 512Ki
+                        maxLength: 63
+                        minLength: 1
+                        pattern: ^([0-9]*[.])?[0-9]+([kMGTPE]|[KMGTPE]i)$
+                        type: string
+                      storage_class_name:
+                        maxLength: 63
+                        minLength: 1
+                        nullable: true
+                        type: string
+                    required:
+                    - size
+                    type: object
+                required:
+                - image
+                - storage
+                type: object
+              transactions:
+                properties:
+                  kafka:
+                    properties:
+                      bootstrapHost:
+                        description: The bootstrap server host used by Kafka clients to discover the Kafka cluster used for transactions.
+                        type: string
+                      topicName:
+                        description: The topic to use for transactions. Defaults to `"transaction.log"`.
+                        maxLength: 255
+                        minLength: 1
+                        nullable: true
+                        pattern: ^[a-z0-9A-Z]([a-z0-9A-Z-_.]*[a-z0-9A-Z]+)?$
+                        type: string
+                    required:
+                    - bootstrapHost
+                    type: object
+                required:
+                - kafka
+                type: object
+            required:
+            - api
+            - auth
+            - network
+            - store
+            - subscriptions
+            - transactions
+            type: object
+          status:
+            nullable: true
+            type: object
+        required:
+        - spec
+        title: Deployment
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: dittostores.ditto.live
+spec:
+  group: ditto.live
+  names:
+    categories: []
+    kind: DittoStore
+    plural: dittostores
+    shortNames: []
+    singular: dittostore
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns: []
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Auto-generated derived type for StoreSpec via `CustomResource`
+        properties:
+          spec:
+            properties:
+              image:
+                description: The container image used to run the workload's pods.
+                type: string
+              imagePullPolicy:
+                description: The image pull policy for containers and the tag of the image affect when the kubelet attempts to pull (download) the specified image.
+                nullable: true
+                type: string
+              imagePullSecrets:
+                description: List of references to secrets in the same namespace to use for pulling any of the images used by this workload.
+                items:
+                  description: LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                      type: string
+                  type: object
+                nullable: true
+                type: array
+              kafka:
+                description: Kafka transaction log configuration.
+                properties:
+                  bootstrapHost:
+                    description: The bootstrap server host used by Kafka clients to discover the Kafka cluster used for transactions.
+                    type: string
+                  topicName:
+                    description: The topic to use for transactions. Defaults to `"transaction.log"`.
+                    maxLength: 255
+                    minLength: 1
+                    nullable: true
+                    pattern: ^[a-z0-9A-Z]([a-z0-9A-Z-_.]*[a-z0-9A-Z]+)?$
+                    type: string
+                required:
+                - bootstrapHost
+                type: object
+              partitioning:
+                description: Data partitioning strategy.
+                properties:
+                  hashingScheme:
+                    type: string
+                  minimumReplicationFactor:
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 0.0
+                    nullable: true
+                    type: integer
+                  partitions:
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 0.0
+                    type: integer
+                  replicationFactor:
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 0.0
+                    type: integer
+                required:
+                - hashingScheme
+                - partitions
+                - replicationFactor
+                type: object
+              ports:
+                description: Port configuration for the store.
+                properties:
+                  http:
+                    description: HTTP port for the store.
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 1.0
+                    type: integer
+                required:
+                - http
+                type: object
+              resources:
+                description: 'Resources requirements for the workload pod''s containers. More info: <https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/>.'
+                nullable: true
+                properties:
+                  claims:
+                    description: |-
+                      Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+                      This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+                      This field is immutable. It can only be set for containers.
+                    items:
+                      description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                      properties:
+                        name:
+                          description: Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+                          type: string
+                      required:
+                      - name
+                      type: object
+                    type: array
+                  limits:
+                    additionalProperties:
+                      description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                      type: string
+                    description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                    type: object
+                  requests:
+                    additionalProperties:
+                      description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                      type: string
+                    description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                    type: object
+                type: object
+              storage:
+                description: Configuration for the workload pod's disk-based persistence.
+                properties:
+                  size:
+                    description: A representation of memory quantities in SI decimal or power-of-two binary prefix formats. The smallest supported value is 0 bytes, and the largest is 15 exabytes.
+                    example: 512Ki
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^([0-9]*[.])?[0-9]+([kMGTPE]|[KMGTPE]i)$
+                    type: string
+                  storage_class_name:
+                    maxLength: 63
+                    minLength: 1
+                    nullable: true
+                    type: string
+                required:
+                - size
+                type: object
+            required:
+            - image
+            - kafka
+            - partitioning
+            - ports
+            - storage
+            type: object
+          status:
+            nullable: true
+            properties:
+              ongoingTransition:
+                description: Indicates whether the cluster is going through a transition
+                type: boolean
+              partitionMismatch:
+                description: Indicates whether there is a mismatch between the desired number of partitions and the number of live partitions.
+                type: boolean
+              replicasNotReady:
+                description: The number of replicas in the current cluster config that are not in a `Ready` state.
+                format: int32
+                maximum: 65535.0
+                minimum: 0.0
+                type: integer
+              replicasNotUpdated:
+                description: The number of replicas in the current cluster config that are not up-to-date.
+                format: int32
+                maximum: 65535.0
+                minimum: 0.0
+                type: integer
+              replicationMismatch:
+                description: Indicates whether there is a mismatch between the desired number of replicas and the number of live replicas.
+                type: boolean
+            required:
+            - ongoingTransition
+            - partitionMismatch
+            - replicasNotReady
+            - replicasNotUpdated
+            - replicationMismatch
+            type: object
+        required:
+        - spec
+        title: Store
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: dittostorereplicas.ditto.live
+spec:
+  group: ditto.live
+  names:
+    categories: []
+    kind: DittoStoreReplica
+    plural: dittostorereplicas
+    shortNames: []
+    singular: dittostorereplica
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns: []
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Auto-generated derived type for StoreReplicaSpec via `CustomResource`
+        properties:
+          spec:
+            properties:
+              routableAddress:
+                description: The RoutableAddress that goes into the ClusterConfig, linked to the ServerId.
+                type: string
+              serverId:
+                description: The ServerId that goes into the ClusterConfig
+                format: uuid
+                type: string
+            required:
+            - routableAddress
+            - serverId
+            type: object
+        required:
+        - spec
+        title: StoreReplica
+        type: object
+    served: true
+    storage: true
+    subresources: {}
+---
+apiVersion: apiextensions.k8s.io/v1
+kind: CustomResourceDefinition
+metadata:
+  name: dittosubscriptions.ditto.live
+spec:
+  group: ditto.live
+  names:
+    categories: []
+    kind: DittoSubscription
+    plural: dittosubscriptions
+    shortNames: []
+    singular: dittosubscription
+  scope: Namespaced
+  versions:
+  - additionalPrinterColumns: []
+    name: v1alpha1
+    schema:
+      openAPIV3Schema:
+        description: Auto-generated derived type for SubscriptionSpec via `CustomResource`
+        properties:
+          spec:
+            properties:
+              auth:
+                description: Auth configuration for the subscription server.
+                properties:
+                  globalAuthConfig:
+                    description: The `ConfigMap` containing the global auth config.
+                    properties:
+                      configMapRef:
+                        description: |-
+                          A reference to the [`ConfigMap`] containing the global auth configuration to mount under `"/etc/config/global_auth_config.json"`. The [`ConfigMap`]'s property schema is expected to match [`AuthConfig`].
+
+                          [`ConfigMap`]: ditto_kube::k8s::corev1::ConfigMap
+                        properties:
+                          name:
+                            description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                            type: string
+                        type: object
+                    required:
+                    - configMapRef
+                    type: object
+                  keys:
+                    description: References to the various key pairs used for device, in-band, and JWT authentication.
+                    properties:
+                      ca:
+                        description: The private key to use as the certificate authority when signing offline peer-to-peer device certificates.
+                        oneOf:
+                        - required:
+                          - secretRef
+                        properties:
+                          secretRef:
+                            description: |-
+                              A reference to a [`Secret`] containing the public/private key pair components.
+
+                              [`Secret`]: ditto_kube::k8s::corev1::Secret
+                            properties:
+                              certificate:
+                                description: The `Secret` property name to use as the public key.
+                                nullable: true
+                                type: string
+                              key:
+                                description: The `Secret` property name to use as the private key.
+                                nullable: true
+                                type: string
+                              name:
+                                description: |-
+                                  The name of the `Secret` containing the key pair.
+
+                                  It must reside in the same namespace as the workload.
+                                type: string
+                              optional:
+                                description: Specify if the `Secret` or the `certificate` or `key` property names must be defined.
+                                nullable: true
+                                type: boolean
+                            required:
+                            - name
+                            type: object
+                        type: object
+                      inBand:
+                        description: The private key to use for in-band key authentication.
+                        oneOf:
+                        - required:
+                          - secretRef
+                        properties:
+                          secretRef:
+                            description: |-
+                              A reference to a [`Secret`] containing the public/private key pair components.
+
+                              [`Secret`]: ditto_kube::k8s::corev1::Secret
+                            properties:
+                              certificate:
+                                description: The `Secret` property name to use as the public key.
+                                nullable: true
+                                type: string
+                              key:
+                                description: The `Secret` property name to use as the private key.
+                                nullable: true
+                                type: string
+                              name:
+                                description: |-
+                                  The name of the `Secret` containing the key pair.
+
+                                  It must reside in the same namespace as the workload.
+                                type: string
+                              optional:
+                                description: Specify if the `Secret` or the `certificate` or `key` property names must be defined.
+                                nullable: true
+                                type: boolean
+                            required:
+                            - name
+                            type: object
+                        type: object
+                      jwt:
+                        description: The key to use for JWT authentication.
+                        oneOf:
+                        - required:
+                          - secretRef
+                        properties:
+                          secretRef:
+                            description: |-
+                              A reference to a [`Secret`] containing the public/private key pair components.
+
+                              [`Secret`]: ditto_kube::k8s::corev1::Secret
+                            properties:
+                              certificate:
+                                description: The `Secret` property name to use as the public key.
+                                nullable: true
+                                type: string
+                              key:
+                                description: The `Secret` property name to use as the private key.
+                                nullable: true
+                                type: string
+                              name:
+                                description: |-
+                                  The name of the `Secret` containing the key pair.
+
+                                  It must reside in the same namespace as the workload.
+                                type: string
+                              optional:
+                                description: Specify if the `Secret` or the `certificate` or `key` property names must be defined.
+                                nullable: true
+                                type: boolean
+                            required:
+                            - name
+                            type: object
+                        type: object
+                    required:
+                    - ca
+                    - inBand
+                    - jwt
+                    type: object
+                required:
+                - globalAuthConfig
+                - keys
+                type: object
+              image:
+                description: The container image used to run the workload's pods.
+                type: string
+              imagePullPolicy:
+                description: The image pull policy for containers and the tag of the image affect when the kubelet attempts to pull (download) the specified image.
+                nullable: true
+                type: string
+              imagePullSecrets:
+                description: List of references to secrets in the same namespace to use for pulling any of the images used by this workload.
+                items:
+                  description: LocalObjectReference contains enough information to let you locate the referenced object inside the same namespace.
+                  properties:
+                    name:
+                      description: 'Name of the referent. More info: https://kubernetes.io/docs/concepts/overview/working-with-objects/names/#names'
+                      type: string
+                  type: object
+                nullable: true
+                type: array
+              kafka:
+                description: Kafka transaction log configuration.
+                properties:
+                  bootstrapHost:
+                    description: The bootstrap server host used by Kafka clients to discover the Kafka cluster used for transactions.
+                    type: string
+                  topicName:
+                    description: The topic to use for transactions. Defaults to `"transaction.log"`.
+                    maxLength: 255
+                    minLength: 1
+                    nullable: true
+                    pattern: ^[a-z0-9A-Z]([a-z0-9A-Z-_.]*[a-z0-9A-Z]+)?$
+                    type: string
+                required:
+                - bootstrapHost
+                type: object
+              ports:
+                description: Port configuration for the subscription server.
+                properties:
+                  http:
+                    description: HTTP port for the subscription server.
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 1.0
+                    type: integer
+                  tcp:
+                    description: TCP port for the subscription server.
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 1.0
+                    type: integer
+                  ws:
+                    description: Websocket port for the subscription server.
+                    format: int32
+                    maximum: 65535.0
+                    minimum: 1.0
+                    type: integer
+                required:
+                - http
+                - tcp
+                - ws
+                type: object
+              replicas:
+                description: The number of subscription server pods to run.
+                format: int32
+                maximum: 65535.0
+                minimum: 0.0
+                type: integer
+              resources:
+                description: 'Resources requirements for the workload pod''s containers. More info: <https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/>.'
+                nullable: true
+                properties:
+                  claims:
+                    description: |-
+                      Claims lists the names of resources, defined in spec.resourceClaims, that are used by this container.
+
+                      This is an alpha field and requires enabling the DynamicResourceAllocation feature gate.
+
+                      This field is immutable. It can only be set for containers.
+                    items:
+                      description: ResourceClaim references one entry in PodSpec.ResourceClaims.
+                      properties:
+                        name:
+                          description: Name must match the name of one entry in pod.spec.resourceClaims of the Pod where this field is used. It makes that resource available inside a container.
+                          type: string
+                      required:
+                      - name
+                      type: object
+                    type: array
+                  limits:
+                    additionalProperties:
+                      description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                      type: string
+                    description: 'Limits describes the maximum amount of compute resources allowed. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                    type: object
+                  requests:
+                    additionalProperties:
+                      description: "Quantity is a fixed-point representation of a number. It provides convenient marshaling/unmarshaling in JSON and YAML, in addition to String() and AsInt64() accessors.\n\nThe serialization format is:\n\n``` <quantity>        ::= <signedNumber><suffix>\n\n\t(Note that <suffix> may be empty, from the \"\" case in <decimalSI>.)\n\n<digit>           ::= 0 | 1 | ... | 9 <digits>          ::= <digit> | <digit><digits> <number>          ::= <digits> | <digits>.<digits> | <digits>. | .<digits> <sign>            ::= \"+\" | \"-\" <signedNumber>    ::= <number> | <sign><number> <suffix>          ::= <binarySI> | <decimalExponent> | <decimalSI> <binarySI>        ::= Ki | Mi | Gi | Ti | Pi | Ei\n\n\t(International System of units; See: http://physics.nist.gov/cuu/Units/binary.html)\n\n<decimalSI>       ::= m | \"\" | k | M | G | T | P | E\n\n\t(Note that 1024 = 1Ki but 1000 = 1k; I didn't choose the capitalization.)\n\n<decimalExponent> ::= \"e\" <signedNumber> | \"E\" <signedNumber> ```\n\nNo matter which of the three exponent forms is used, no quantity may represent a number greater than 2^63-1 in magnitude, nor may it have more than 3 decimal places. Numbers larger or more precise will be capped or rounded up. (E.g.: 0.1m will rounded up to 1m.) This may be extended in the future if we require larger or smaller quantities.\n\nWhen a Quantity is parsed from a string, it will remember the type of suffix it had, and will use the same type again when it is serialized.\n\nBefore serializing, Quantity will be put in \"canonical form\". This means that Exponent/suffix will be adjusted up or down (with a corresponding increase or decrease in Mantissa) such that:\n\n- No precision is lost - No fractional digits will be emitted - The exponent (or suffix) is as large as possible.\n\nThe sign will be omitted unless the number is negative.\n\nExamples:\n\n- 1.5 will be serialized as \"1500m\" - 1.5Gi will be serialized as \"1536Mi\"\n\nNote that the quantity will NEVER be internally represented by a floating point number. That is the whole point of this exercise.\n\nNon-canonical values will still parse as long as they are well formed, but will be re-emitted in their canonical form. (So always use canonical form, or don't diff.)\n\nThis format is intended to make it difficult to use these numbers without writing some sort of special handling code in the hopes that that will cause implementors to also use a fixed point implementation."
+                      type: string
+                    description: 'Requests describes the minimum amount of compute resources required. If Requests is omitted for a container, it defaults to Limits if that is explicitly specified, otherwise to an implementation-defined value. More info: https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/'
+                    type: object
+                type: object
+              storage:
+                description: Configuration for the workload pod's disk-based persistence.
+                properties:
+                  size:
+                    description: A representation of memory quantities in SI decimal or power-of-two binary prefix formats. The smallest supported value is 0 bytes, and the largest is 15 exabytes.
+                    example: 512Ki
+                    maxLength: 63
+                    minLength: 1
+                    pattern: ^([0-9]*[.])?[0-9]+([kMGTPE]|[KMGTPE]i)$
+                    type: string
+                  storage_class_name:
+                    maxLength: 63
+                    minLength: 1
+                    nullable: true
+                    type: string
+                required:
+                - size
+                type: object
+            required:
+            - auth
+            - image
+            - kafka
+            - ports
+            - replicas
+            - storage
+            type: object
+          status:
+            nullable: true
+            type: object
+        required:
+        - spec
+        title: Subscription
+        type: object
+    served: true
+    storage: true
+    subresources:
+      status: {}
