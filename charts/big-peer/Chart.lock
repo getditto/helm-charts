@@ -32,5 +32,5 @@ dependencies:
 - name: kafka
   repository: https://getditto.github.io/helm-charts/
   version: 0.3.3
-digest: sha256:c78b26699c45312db537a31949082f337cf3a17abb70f63eabe32afa1574a53e
-generated: "2024-11-27T15:20:27.251739+13:00"
+digest: sha256:66918c7a525697717672ecd1aba611de9948589250b91c9a5f9a7bdb7ed7426f
+generated: "2024-12-19T11:44:09.63629131-06:00"
