@@ -70,12 +70,12 @@ spec:
             {{- range .Values.strimzi.alternateNames }}
               - {{ tpl . $ | quote }}
             {{- end }}
-            annotations: {{ .Values.strimzi.externalListener.bootstrapAnnotations }}
+            annotations: {{ toYaml .Values.strimzi.externalListener.bootstrapAnnotations | nindent 14 }}
           brokers:
             {{- range $i, $e := until (int .Values.strimzi.replicas) }}
             - broker: {{ $e }}
               host: {{ tpl $.Values.strimzi.externalListener.brokerNameTemplate (merge (deepCopy $) (dict "brokerId" $e)) | quote }}
-              annotations: {{ .Values.strimzi.externalListener.brokerAnnotations }}
+              annotations: {{ toYaml $.Values.strimzi.externalListener.brokerAnnotations | nindent 16 }}
             {{- end }}
 {{- end }}
     readinessProbe:
