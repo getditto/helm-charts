@@ -22,7 +22,7 @@ dependencies:
   version: 0.44.0
 - name: kafka
   repository: https://getditto.github.io/helm-charts/
-  version: 0.3.3
+  version: 0.3.5
 - name: dummy-auth-webhook
   repository: oci://quay.io/ditto-external
   version: 0.1.1
@@ -31,6 +31,6 @@ dependencies:
   version: 0.1.0-002c59
 - name: kafka
   repository: https://getditto.github.io/helm-charts/
-  version: 0.3.3
-digest: sha256:dbf32fa8d6fa1346211fb86b5cf3bc9921cdf83bbe577c2c45c74ee0f6d05b63
-generated: "2024-12-19T12:05:59.366092125-06:00"
+  version: 0.3.5
+digest: sha256:32d2472e3b0c018b3fdfd462273c02adb7117b54a714ba13ce9be2a0888f663d
+generated: "2025-01-10T10:55:30.13758089-06:00"
