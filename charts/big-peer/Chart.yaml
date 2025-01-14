@@ -32,30 +32,13 @@ maintainers:
     email: charts@ditto.live
 dependencies:
   # Both longhorn and minio are used for storage, longhorn seems to be more robust
-  - name: hades
-    version: "1.39.2-4b6e4e"
-    repository: "oci://quay.io/ditto-external"
-    condition: hades.enabled
-    tags:
-      - hades
-  - name: hydra-consul
+  - name: ditto-operator
     version: "0.1.0"
-    repository: "oci://quay.io/ditto-external"
-    condition: hydra-consul.enabled
+    #repository: "oci://quay.io/ditto-external"
+    repository: "file://../../../ditto/charts/operator"
+    condition: ditto-operator.enabled
     tags:
-      - hydra-consul
-  - name: hydra-store
-    version: "1.39.2-4b6e4e"
-    repository: "oci://quay.io/ditto-external"
-    condition: hydra-store.enabled
-    tags:
-      - hydra-store
-  - name: hydra-subscription
-    version: "1.39.2-4b6e4e"
-    repository: "oci://quay.io/ditto-external"
-    condition: hydra-subscription.enabled
-    tags:
-      - hydra-subscription
+      - ditto-operator
   - name: service-token-validator
     version: "0.2.1"
     repository: "oci://quay.io/ditto-external"
@@ -83,10 +66,10 @@ dependencies:
       - kafka
   - name: dummy-auth-webhook
     repository: "oci://quay.io/ditto-external"
-    condition: dummy-auth-webhook.enabled
+    condition: big-peer-auth-webhook.enabled
     version: "0.1.1"
     tags:
-      - dummy-auth-webhook
+      - big-peer-auth-webhook
   - name: live-query-resource-controller
     alias: live-query
     repository: "oci://quay.io/ditto-external"

@@ -47,6 +47,229 @@ global:
   tolerations: []
   affinity: {}
 
+ditto-operator:
+  namespace: ""
+  operator:
+    config:
+      watchNamespace: null
+      bindAddress: 0.0.0.0
+      bindPort: 8080
+
+    rbac:
+      # -- If the global ClusterRole and ClusterRoleBinding should be created.
+      create: true
+
+    serviceAccount:
+      # -- Specifies whether a ServiceAccount should be created. This can be unset and name specified
+      # if you want to use an existing ServiceAccount.
+      create: true
+
+      # -- The name of the ServiceAccount to use. If unset and create is true, fullname is used.
+      name: ""
+
+      # -- Automount API credentials for the Service Account using automountServiceAccountToken.
+      automount: true
+
+      # -- optional additional annotations to add to the controller's service account.
+      extraAnnotations: {}
+
+      # -- optional additional labels to add to the controller's service account.
+      extraLabels: {}
+
+    image:
+      # -- The container registry to pull the acmesolver image from.
+      registry: quay.io
+
+      # -- The container image for the operator controller.
+      repository: ditto-external/ditto-operator
+
+      # -- Override the image tag to deploy by setting this variable. If no value is set, the chart's
+      # appVersion is used.
+      tag: ""
+        # tag: vX.Y.Z
+
+      # -- Setting a digest will override any tag.
+      digest: ""
+        # digest: sha256:0e072dddd1f7f8fc8909a2ca6f65e76c5f0d2fcfb8be47935ae3457e8bbceb20
+
+      # -- Kubernetes imagePullPolicy on Deployment.
+      pullPolicy: IfNotPresent
+
+      # -- Reference to one or more secrets to be used when pulling images.
+      #
+      # For more information, see [Pull an Image from a Private Registry](https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/).
+      pullSecrets: []
+        # - name: "image-pull-secret"
+
+    # -- Number of replicas to run in the Deployment.
+    #
+    # Note: for preview, only 1 replica is supported until leader election is feature complete.
+    replicaCount: 1
+
+    # -- Number of old ReplicaSets to retain for the Deployment before garbage collection occurs.
+    revisionHistoryLimit: 10
+
+    # -- Resources to provide to the operator controller pod.
+    #
+    # For more information, see [Resource Management for Pods and Containers](https://kubernetes.io/docs/concepts/configuration/manage-resources-containers/).
+    resources: {}
+      #  requests:
+      #    cpu: 100m
+      #    memory: 1Gi
+
+    # Deployment update strategy for the operator controller deployment.
+    # For more information, see the [Kubernetes documentation](https://kubernetes.io/docs/concepts/workloads/controllers/deployment/#strategy).
+    strategy: {}
+      #  strategy:
+      #    type: RollingUpdate
+      #    rollingUpdate:
+      #      maxSurge: 0
+      #      maxUnavailable: 1
+
+    # -- The optional priority class to be used for the operator pods.
+    priorityClassName: ""
+
+    # -- The nodeSelector on Pods tells Kubernetes to schedule Pods on the nodes with matching labels.
+    #
+    # For more information, see [Assigning Pods to Nodes](https://kubernetes.io/docs/concepts/scheduling-eviction/assign-pod-node/).
+    #
+    #
+    # This default ensures that Pods are only scheduled to Linux nodes. It prevents Pods being scheduled to Windows nodes in a mixed OS cluster.
+    nodeSelector:
+      kubernetes.io/os: linux
+
+    # A Kubernetes Affinity, if required. For more information, see [Affinity v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#affinity-v1-core).
+    #
+    # For example:
+    #   affinity:
+    #     nodeAffinity:
+    #      requiredDuringSchedulingIgnoredDuringExecution:
+    #        nodeSelectorTerms:
+    #        - matchExpressions:
+    #          - key: foo.bar.com/role
+    #            operator: In
+    #            values:
+    #            - master
+    affinity: {}
+
+    # A list of Kubernetes Tolerations, if required. For more information, see [Toleration v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#toleration-v1-core).
+    #
+    # For example:
+    #   tolerations:
+    #   - key: foo.bar.com/role
+    #     operator: Equal
+    #     value: master
+    #     effect: NoSchedule
+    tolerations: []
+
+    # A list of Kubernetes TopologySpreadConstraints, if required. For more information, see [Topology spread constraint v1 core](https://kubernetes.io/docs/reference/generated/kubernetes-api/v1.27/#topologyspreadconstraint-v1-core
+    #
+    # For example:
+    #   topologySpreadConstraints:
+    #   - maxSkew: 2
+    #     topologyKey: topology.kubernetes.io/zone
+    #     whenUnsatisfiable: ScheduleAnyway
+    #     labelSelector:
+    #       matchLabels:
+    #         app.kubernetes.io/instance: operator
+    #         app.kubernetes.io/component: controller
+    topologySpreadConstraints: []
+
+    # Pod Security Context.
+    # For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
+    # +docs:property
+    securityContext:
+      runAsNonRoot: true
+      seccompProfile:
+        type: RuntimeDefault
+
+    # Container Security Context to be set on the controller component container.
+    # For more information, see [Configure a Security Context for a Pod or Container](https://kubernetes.io/docs/tasks/configure-pod-container/security-context/).
+    # +docs:property
+    containerSecurityContext:
+      allowPrivilegeEscalation: false
+      readOnlyRootFilesystem: true
+      capabilities:
+        drop:
+        - ALL
+
+    # LivenessProbe settings for the controller container of the controller Pod.
+    #
+    # This is enabled by default, in order to enable the clock-skew liveness probe that
+    # restarts the controller in case of a skew between the system clock and the monotonic clock.
+    # LivenessProbe durations and thresholds are based on those used for the Kubernetes
+    # controller-manager. For more information see the following on the
+    # [Kubernetes GitHub repository](https://github.com/kubernetes/kubernetes/blob/806b30170c61a38fedd54cc9ede4cd6275a1ad3b/cmd/kubeadm/app/util/staticpod/utils.go#L241-L245)
+    # +docs:property
+    livenessProbe:
+      enabled: true
+      path: /healthz
+      initialDelaySeconds: 10
+      periodSeconds: 10
+      timeoutSeconds: 15
+      successThreshold: 1
+      failureThreshold: 8
+
+    # -- Optional additional annotations to add to the controller's service account.
+    extraAnnotations: {}
+
+    # -- Optional additional labels to add to the controller's service account.
+    extraLabels: {}
+
+    # Additional volumes to add to the operator controller pod.
+    extraVolumes: []
+
+    # Additional volume mounts to add to the operator controller container.
+    extraVolumeMounts: []
+
+    # Additional command line flags to pass to operator controller binary.
+    # To see all available flags run docker run quay.io/jetstack/operator-controller:<version> --help.
+    #
+    # Use this flag to enable or disable arbitrary controllers. For example, to disable the CertificateRequests approver.
+    #
+    # For example:
+    #  extraArgs:
+    #    - --controllers=*,-certificaterequests-approver
+    extraArgs: []
+
+    # Additional environment variables to pass to operator controller binary.
+    # For example:
+    #  extraEnv:
+    #  - name: SOME_VAR
+    #    value: 'some value'
+    extraEnv: []
+
+    # -- Additional init containers to run as part of the operator deployment
+    extraInitContainers: []
+      # - name: hello-once
+      # args:
+      #   - -c
+      #   - "echo 'Hello World!'"
+      # command:
+      #   - /bin/sh
+      # image: 'busybox:glibc'
+
+    # -- Additional containers to run as part of the operator deployment
+    extraContainers: []
+      # - name: hello-many
+      # args:
+      #   - -c
+      #   - "while true; do echo hi; sleep 300; done"
+      # command:
+      #   - /bin/sh
+      # image: 'busybox:glibc'
+
+  # Create dynamic manifests via values.
+  #
+  # For example:
+  # extraObjects:
+  #   - |
+  #     apiVersion: v1
+  #     kind: ConfigMap
+  #     metadata:
+  #       name: '{{ template "operator.fullname" . }}-extra-configmap'
+  extraObjects: []
+
 apps:
   myApp:
     enabled: false
@@ -92,566 +315,6 @@ kafka:
     kafkaExporter:
       enabled: false
     cruiseControl:
-      enabled: false
-
-# -- Configure the ingresses for the chart here.
-# Additional ingresses can be added by adding a dictionary key similar to the 'main' ingress.
-# @default -- See below
-ingress:
-  main:
-    # -- Enables or disables the ingress
-    enabled: false
-
-    # -- Make this the primary ingress (used in probes, notes, etc...).
-    # If there is more than 1 ingress, make sure that only 1 ingress is marked as primary.
-    primary: true
-
-    # -- Override the name suffix that is used for this ingress.
-    nameOverride:
-
-    # -- Provide additional annotations which may be required.
-    annotations:
-      {}
-      # kubernetes.io/ingress.class: traefik
-      # kubernetes.io/tls-acme: "true"
-
-    # -- Provide additional labels which may be required.
-    labels: {}
-
-    # -- Set the ingressClass that is used for this ingress.
-    # Requires Kubernetes >=1.19
-    ingressClassName:  # "traefik"
-
-    ## Configure the hosts for the ingress
-    hosts:
-      -  # -- Host address. Helm template can be passed.
-        host: chart-example.local
-        ## Configure the paths for the host
-        paths:
-          -  # -- path.  helm template can be passed.
-            path: /_ditto
-            # -- ignored if not kubeversion >= 1.14-0
-            pathtype: prefix
-            service:
-              # -- overrides the service name reference for this path
-              name: ditto-bp-hydra-subscription
-              # -- overrides the service port reference for this path
-              port: 8080
-
-          -  # -- path.  helm template can be passed.
-            path: /
-            # -- ignored if not kubeversion >= 1.14-0
-            pathtype: prefix
-            service:
-              # -- overrides the service name reference for this path
-              name: ditto-bp-hydra-subscription
-              # -- overrides the service port reference for this path
-              port: 10080
-
-    # -- Configure TLS for the ingress. Both secretName and hosts can process a Helm template.
-    tls: []
-
-########################################################################
-# Hades Default Values
-# Custom Resource Definitions
-# This application requires the `hydracluster.hades.app.ditto.live`
-# custom resource definition be installed on the target k8s cluster.
-########################################################################
-
-hades:
-  enabled: true
-  replicaCount: 1
-  image:
-    name: quay.io/ditto-external/big-peer-store-controller:1.39.2
-    pullPolicy: IfNotPresent
-    # Overrides the image tag whose default is the chart appVersion.
-
-  podAnnotations: {}
-  podLabels: {}
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-
-  securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  volumeMounts: []
-  volumes: []
-
-  autoscaling:
-    enabled: false
-
-  nameOverride: ""
-  fullnameOverride: ""
-
-  env:
-    logFormatter: json
-    rustLog: hades=info,kube=warn,kube_coordinate=info,k8s_controller=warn,k8s_helpers=info,hades::k8s::controllers::cluster_config=debug
-
-  deployment:
-    containerPort: 8080
-    livenessProbe:
-      enabled: true
-    readinessProbe:
-      enabled: true
-    configReadOnlyMode: false
-    controllers:
-      - HydraPartition
-      - HydraReplica
-      - HydraPartitionStatus
-      - ClusterConfig
-
-  # ensure compatibility with hades v1 by default
-  compat: false
-  deployGlobal: false
-
-  serviceAccount:
-    # Specifies whether a service account should be created
-    create: true
-    # Annotations to add to the service account
-    annotations: {}
-    # The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-
-  # Service
-  service:
-    type: ClusterIP
-    port: 80
-
-  resources:
-    {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
-    # limits:
-    #   cpu: 100m
-    #   memory: 128Mi
-    # requests:
-    #   cpu: 100m
-    #   memory: 128Mi
-
-###################################################################
-# Hydra Consul Default Values
-# For more information see consul helm chart link
-# https://github.com/hashicorp/consul-k8s/tree/v1.2.0/charts/consul
-#####################################################################
-
-hydra-consul:
-  enabled: true
-
-  # Default values for hydra-consul.
-  consul:
-    fullnameOverride: ditto-hydra-consul
-    # Holds values that affect multiple components of the chart.
-    global:
-      enabled: false
-    # Values that configure running a Consul client on Kubernetes nodes.
-    client:
-      # If true, the chart will install all
-      # the resources necessary for a Consul client on every Kubernetes node. This _does not_ require
-      # `server.enabled`, since the agents can be configured to join an external cluster.
-      # @type: boolean
-      enabled: false
-    # Configures the automatic Connect sidecar injector.
-    connectInject:
-      # True if you want to enable connect injection. Set to "-" to inherit from
-      # global.enabled.
-      enabled: false
-
-    # Configuration for DNS configuration within the Kubernetes cluster.
-    # This creates a service that routes to all agents (client or server)
-    # for serving DNS requests. This DOES NOT automatically configure kube-dns
-    # today, so you must still manually configure a `stubDomain` with kube-dns
-    # for this to have any effect:
-    # https://kubernetes.io/docs/tasks/administer-cluster/dns-custom-nameservers/#configure-stub-domain-and-upstream-dns-servers
-    dns:
-      enabled: false
-    # Server, when enabled, configures a server cluster to run. This should
-    # be disabled if you plan on connecting to a Consul cluster external to
-    # the Kube cluster.
-    server:
-      # If true, the chart will install all the resources necessary for a
-      # Consul server cluster. If you're running Consul externally and want agents
-      # within Kubernetes to join that cluster, this should probably be false.
-      # @default: global.enabled
-      # @type: boolean
-      enabled: true
-      connect: false
-      replicas: 1
-      extraConfig: |
-        {
-          "leave_on_terminate": true
-        }
-  # Enables you to configure network access to the components enabled in the hydra-consul install.
-  networkPolicies:
-    enabled: false
-    ingress:
-      httpApi:
-        - podSelector:
-            matchExpressions:
-              - key: app.kubernetes.io/name
-                operator: In
-                values:
-                  - hydra-subscription
-                  - hydra-api
-
-    # Egress Rules for the Hydra Consul, these can be templated and refer to other Values if needed.
-    # In the spec.egress field, you can specify multiple to conditions and ports that the egress rule applies to.
-    egress:
-      - to:
-          - namespaceSelector: {}
-            podSelector:
-              matchLabels:
-                k8s-app: kube-dns
-        ports:
-          - port: 1053
-            protocol: UDP
-          - port: 1053
-            protocol: TCP
-
-#################################
-# Hydra Store Default Values
-################################
-
-hydra-store:
-  enabled: true
-
-  # Default values for hydra.
-  # This is a YAML-formatted file.
-  # Declare variables to be passed into your templates.
-
-  image:
-    # fully specified image name, including the registry
-    name: quay.io/ditto-external/big-peer-store:1.39.2
-    # whether to pull the image from the registry before running or not. "IfNotPresent", "Always", and "Never"
-    pullPolicy: IfNotPresent
-
-  version: v1alpha3
-
-  # imagePullSecrets[] -- secret references for access to private image repositories
-  imagePullSecrets: []
-
-  serviceAccount:
-    # -- Specifies whether a service account should be created
-    create: true
-    # -- Annotations to add to the service account
-    annotations: {}
-    # -- The name of the service account to use.
-    # If not set and create is true, a name is generated using the fullname template
-    name: ""
-
-  podAnnotations: {}
-
-  podLabels: {}
-
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-
-  securityContext:
-    capabilities:
-      add:
-        - IPC_LOCK
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  service:
-    # -- the port exposed by the service, used by other pods to access HyDRA
-    port: 8080
-
-  # -- the RUST_LOG for the server pods
-  rustLog: "info,hydra_store=debug,hydra_common=debug"
-
-  additionalEnv:
-    TRACING_FORMAT: json
-
-  resources:
-    {}
-    # We usually recommend not to specify default resources and to leave this as a conscious
-    # choice for the user. This also increases chances charts run on environments with little
-    # resources, such as Minikube. If you do want to specify resources, uncomment the following
-    # lines, adjust them as necessary.
-    # these defaults have been added here to match the existing manifests.
-    # limits:
-    #   cpu: "200m"
-    #   memory: "128Mi"
-    # requests:
-    #   cpu: "200m"
-    #   memory: "128Mi"
-
-  persistence:
-    size: 1Gi
-    ## set on cluster to appropriate values
-    # storageClassName: standard
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  partitioning:
-    standard:
-      partitions: 1
-      replicationFactor: 1
-
-  # partitionSpreadConstraints:
-  #   - topologyKey: "kubernetes.io/hostname"
-  #     type: required
-  #     labelKeys:
-  #       - "hades.app.ditto.live/hydrapartition"
-
-  # used to manage the kafkatopic resource
-  kafka:
-    # -- name of the kafka cluster that the topic should be created in (template)
-    clusterName: "{{.Release.Name}}-kafka"
-    # -- namespace of the kafka cluster that the topic should be created in (template)
-    namespace: "{{ .Release.Namespace }}"
-    # -- broker service (template)
-    brokerService: "{{ tpl $.Values.kafka.clusterName . }}-kafka-brokers.{{ tpl $.Values.kafka.namespace . }}:9092"
-    # -- whether to create the `KafkaTopic` resource for the transaction topic.
-    #    This can be disabled if the topic is managed externally or if you're not using Strimzi
-    createTopic: true
-    # -- name of the topic for transactions (template)
-    transactionsTopic: '{{ include "hydra.fullname" . }}-{{ .Release.Namespace }}-transactions'
-    topicReplication: 1
-    # -- additional topic level configuration for the transaction topic
-    topicConfig:
-      "cleanup.policy": "delete"
-      "max.message.bytes": 104857600
-
-  serviceMonitor:
-    # serviceMonitor.enabled -- If true, creates a Prometheus Operator ServiceMonitor.
-    enabled: false
-    # serviceMonitor.interval -- Interval that Prometheus scrapes metrics.
-    interval: 5s
-    ## [Prometheus Selector Label](https://github.com/helm/charts/tree/master/stable/prometheus-operator#prometheus-operator-1)
-    ## [Kube Prometheus Selector Label](https://github.com/helm/charts/tree/master/stable/prometheus-operator#exporters)
-    # serviceMonitor.selector -- Default to kube-prometheus install (CoreOS recommended), but should be set according to Prometheus install.
-    selector:
-      release: prometheus-operator
-    # serviceMonitor.path -- The path to scrape for metrics; autoscaler exposes `/metrics` (this is standard)
-    path: /metrics
-    # serviceMonitor.relabelings -- The list of [metric relabeling configs](https://github.com/prometheus-operator/prometheus-operator/blob/master/Documentation/api.md#relabelconfig) for prometheus
-    # @default -- automatically adds labels that contain app.ditto.live or app.kubernetes.io under `pod_label_<label-name>`
-    relabelings:
-      - action: labelmap
-        regex: "__meta_kubernetes_pod_label_(app_ditto_live_.*|.*_app_ditto_live_.*|app_kubernetes_io_.*)"
-        replacement: "pod_label_$1"
-
-######################################
-# Hydra Subscription Default Values
-# Dependencies: Hydra-Store, Hades
-#####################################
-hydra-subscription:
-  enabled: true
-
-  replicaCount: 1
-
-  image:
-    name: quay.io/ditto-external/big-peer-subscription:1.39.2
-    pullPolicy: IfNotPresent
-
-  service:
-    wsPort: 8080
-    httpPort: 10080
-
-  clusterDomain: local
-
-  ingress:
-    enabled: false
-    annotations: {}
-    # ingress.publicDomain -- The base domain for public app specific routes (templated)
-    publicDomain: "{{ $.Values.clusterDomain }}"
-    # ingress.internalDomain -- The base domain for internal cluster specific routes (templated)
-    internalDomain: "{{ $.Values.clusterDomain }}"
-    # ingress.internalHosts -- A list of inputs for internal ingresses
-    internalHosts:
-      - name: development
-        subdomain: "subscriptions-{{ .Release.Namespace }}"
-        additionalAnnotations: {}
-    appSpecific:
-      []
-      # - appId: "00000000-0000-0000-0000-000000000002"
-      #   appName: "test2"
-      #   organization: "test2"
-      #   additionalAnnotations: {}
-      #   websocketAnnotations: {}
-      # - appId: "16f982f2-0cf3-4227-9212-b5dff105f1ca"
-      #   appName: "cool-app-1"
-      #   organization: "WeMakeApps"
-      #   additionalAnnotations: {}
-      #   websocketAnnotations:
-      #     thisisa: websocketingress
-      #   httpAnnotations:
-      #     thisisa: httpingress
-
-  dataVolumeSizeLimit: 1Gi
-
-  hydraCluster:
-    # -- The name of the HydraCluster object to target
-    name: "ditto-bp-hydra-store"
-    # -- The query url of the HydraCluster (templated)
-    queryUrl: "http://{{ $.Values.hydraCluster.name }}:8080/"
-    # -- The session url of the HydraCluster (templated)
-    sessionUrl: "dnssrv+_http._tcp.{{ $.Values.hydraCluster.name }}-session"
-    # -- The transactions topic of the HydraCluster where writes are written (templated)
-    transactionsTopic: "{{ $.Values.hydraCluster.name }}-{{ $.Release.Namespace }}-transactions"
-    # transactionsTopic: '{{ include "hydra.fullname" . }}-{{ .Release.Namespace }}-transactions'
-
-  # used to manage the kafkatopic resource
-  kafka:
-    # -- name of the kafka cluster that the topic should be created in (template)
-    clusterName: "{{.Release.Name}}-kafka"
-    # -- namespace of the kafka cluster that the topic should be created in (template)
-    namespace: "{{ .Release.Namespace }}"
-
-  env:
-    dataPath: /subscription-server
-    logLevel: info,hydra_subscription=debug,hydra_common=debug,ditto_auth=debug
-    logFormatter: json
-    kafkaBootstrapHost: "{{ tpl $.Values.kafka.clusterName . }}-kafka-brokers.{{ tpl $.Values.kafka.namespace . }}:9092"
-    tracingHost: ""
-    consulHttpAddr: ditto-hydra-consul-server:8500
-    authAPIKeyServerUrl: "http://ditto-bp-dummy-auth-webhook"
-
-  additionalEnv: {}
-
-  podAnnotations: {}
-
-  podSecurityContext:
-    {}
-    # fsGroup: 2000
-
-  securityContext:
-    {}
-    # capabilities:
-    #   drop:
-    #   - ALL
-    # readOnlyRootFilesystem: true
-    # runAsNonRoot: true
-    # runAsUser: 1000
-
-  resources: {}
-
-  nodeSelector: {}
-
-  tolerations: []
-
-  affinity: {}
-
-  serviceMonitor:
-    # serviceMonitor.enabled -- If true, creates a Prometheus Operator ServiceMonitor.
-    enabled: false
-
-  attachmentStore:
-    # attachmentStore.enabled -- If true, stores attachments in a blob store.
-    enabled: false
-
-  serviceAccount:
-    # serviceAccount.create -- If true, create a service account
-    create: true
-    # serviceAccount.name -- The name of the service account to use (templated)
-    name: ""
-    # serviceAccount.annotations -- Annotations to add to the service account
-    annotations: {}
-
-  # auth - configuration for JWT authentication
-  auth:
-    # auth.secretName - the name of the secret that contains the JWT encoding and decoding keys (templated)
-    secretName: '{{ include "subscription-server.fullname" . }}-jwt-tokens'
-    # auth.encodingKeyRef - the key in the secret that contains the JWT encoding key
-    encodingKeyRef: "tls.key"
-    # auth.decodingKeyRef - the key in the secret that contains the JWT decoding key
-    decodingKeyRef: "tls.crt"
-    # auth.additionalDecodingKeys - list of additional valid JWT decoding keys
-    additionalDecodingKeys: []
-    certificate:
-      # auth.certificate.create - create a cert-manager certificate for the JWT keys
-      create: true
-      # auth.certificate.name - the name of the cert-manager certificate (templated)
-      name: "cert"
-      # auth.certificate.commonName - the common name of the cert-manager certificate (templated)
-      commonName: "dev-jwt-issuer"
-      # auth.certificate.issuerRef - the name of the cert-manager issuer to use
-      issuerRef: "{{ .Values.certManager.selfSignedIssuer.name }}"
-
-  # deviceAuth - configuration for offline peer to peer device certificate authentication
-  deviceAuth:
-    # deviceAuth.secretName - the name of the secret that contains the device CA certificate and key (templated)
-    secretName: '{{ include "subscription-server.fullname" . }}-device-certs'
-    # deviceAuth.caEncodingKeyRef - the key in the secret that contains the device CA private key, used for signing device certificates (caEncodingKey literal value takes precedence over caEncodingKeyRef)
-    caEncodingKeyRef: "tls.key"
-    # deviceAuth.additionalCATrustedCerts - list of additional CA certificates to trust for device authentication
-    additionalCATrustedCerts: []
-    certificate:
-      # deviceAuth.certificate.create - create a cert-manager certificate for the device CA
-      create: true
-      # deviceAuth.certificate.name - the name of the cert-manager certificate (templated)
-      name: "device-cert"
-      # deviceAuth.certificate.commonName - the common name of the cert-manager certificate (templated)
-      commonName: "dev-device-cert-issuer"
-      # deviceAuth.certificate.issuerRef - the name of the cert-manager issuer to use
-      issuerRef: "{{ .Values.certManager.selfSignedIssuer.name }}"
-
-  globalAuthConfig:
-    # globalAuthConfig.providers -- object containing a list of global default auth providers.  These providers will be available to every app and can not be disabled.
-    "providers":
-      {
-        "dummy-provider":
-          {
-            "type": "tokenWebhook",
-            "webhookUrl": "http://ditto-bp-dummy-auth-webhook/validate_token",
-          },
-        "__playgroundProvider":
-          {
-            "type": "anonymous",
-            "sessionLength": 630000,
-            "sharedToken": "test",
-            "permission":
-              {
-                "read": {"everything": true, "queriesByCollection": {}},
-                "write": {"everything": true, "queriesByCollection": {}},
-              },
-          },
-      }
-
-  certManager:
-    enabled: true
-    selfSignedIssuer:
-      create: true
-      name: selfsigned-issuer
-
-  networkPolicies:
-    enabled: false
-
-  # -- the configuration of the statefulset for the http api server
-  apiServer:
-    enabled: true
-    replicaCount: 1
-    env: {}
-    additionalEnv: {}
-    additionalLabels: {}
-    resources: {}
-    networkPolicies:
       enabled: false
 
 ######################################
