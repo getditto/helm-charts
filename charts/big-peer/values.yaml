@@ -47,6 +47,40 @@ global:
   tolerations: []
   affinity: {}
 
+ditto-deployment:
+  name: bp
+  version: 1.39.2
+  image:
+    namePrefix: quay.io/ditto-external
+    pullPolicy: IfNotPresent
+    pullSecrets: []
+  pki:
+    device:
+      secretName: '{{ .Release.Name }}-subserver-cert-pki'
+    inband:
+      secretName: '{{ .Release.Name }}-subserver-jwt-pki'
+    jwt:
+      secretName: '{{ .Release.Name }}-subserver-jwt-pki'
+  storage:
+    storage_class_name: local-path
+  transactions:
+    kafka:
+      topic:
+        name: transaction.log
+        partitions: 1
+        replicas: 1
+      bootstrapHost: ditto-bp-kafka-kafka-bootstrap.big-peer.svc.cluster.local:9092
+  providers:
+    dummyProvider:
+      type: tokenWebhook
+      webhookUrl: "http://dummy-auth-webhook/validate_token"
+    internal:
+      type: tokenWebhook
+      webhookUrl: "http://ditto-bp-service-token-validator/v1.0/token-validation/ditto"
+    bpam:
+      type: tokenWebhook
+      webhookUrl: "http://ditto-bp-bpam/authorize"
+
 ditto-operator:
   namespace: ""
   operator:
