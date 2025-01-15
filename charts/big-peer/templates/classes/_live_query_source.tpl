@@ -35,8 +35,8 @@ metadata:
   {{- end }}
 spec:
   appId: {{ $appValues.id }}
-  description: null
-  collection: null 
+  description: {{ $queryValues.description }}
+  collection: {{ $queryValues.collection }}
   liveQueryCoreRef:
     name: {{ $appValues.id }}
     namespace: {{ .Release.Namespace }}

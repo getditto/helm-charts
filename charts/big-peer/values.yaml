@@ -57,6 +57,8 @@ apps:
       queries:
         - name: "all_the_things"
           enabled: true
+          description: null
+          collection: null
           queryFilterExpression: "true"
           schema: untyped
           sinks:
@@ -67,6 +69,8 @@ apps:
               url: "http://myapp.com/rimshot"
         - name: "send_to_hook"
           enabled: true
+          description: null
+          collection: null
           queryFilterExpression: "true"
           schema: untyped
           sinks:
@@ -862,11 +866,15 @@ live-query-kafka:
       dualRoles: true
       replicas: 1
 
+
   # disable kafka supporting services that are not required
   strimzi:
     replicas: 3
     authorization: simple
-    external: true
+
+    externalListener:
+      enabled: false
+
 
     # interBrokerProtocolVersion: 3.8.0
     kafkaVersion: 3.8.0
