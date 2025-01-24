@@ -34,8 +34,8 @@ dependencies:
   # Both longhorn and minio are used for storage, longhorn seems to be more robust
   - name: ditto-operator
     version: "0.1.0"
-    #repository: "oci://quay.io/ditto-external"
-    repository: "file://../../../ditto/charts/operator"
+    repository: "oci://quay.io/ditto-external"
+    # repository: "file://../../../ditto/charts/operator"
     condition: ditto-operator.enabled
     tags:
       - ditto-operator

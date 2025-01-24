@@ -1,6 +1,6 @@
 dependencies:
 - name: ditto-operator
-  repository: file://../../../ditto/charts/operator
+  repository: oci://quay.io/ditto-external
   version: 0.1.0
 - name: service-token-validator
   repository: oci://quay.io/ditto-external
@@ -23,5 +23,5 @@ dependencies:
 - name: kafka
   repository: https://getditto.github.io/helm-charts/
   version: 0.3.5
-digest: sha256:c339f05abb1a9ec15d474bf62acd2e0054a3d3c6a6451ab904136c09d0b1990c
-generated: "2025-01-10T17:20:20.622934-05:00"
+digest: sha256:dc3b34380830ab4a9087ded2f0c8dad29072882c4e9e8c115a92790a71891f92
+generated: "2025-01-24T15:39:29.614634-05:00"

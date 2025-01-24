@@ -5,7 +5,7 @@
   {{- $storageClassName := default "local-path" $values.storage.storage_class_name -}}
 ---
 apiVersion: ditto.live/v1alpha1
-kind: DittoDeployment
+kind: BigPeer
 metadata:
   name: {{ $values.name | default "big-peer" }}
 spec:
