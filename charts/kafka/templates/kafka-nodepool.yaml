@@ -14,6 +14,8 @@ metadata:
     {{- include "kafka.labels" . | nindent 4 }}
 spec:
   replicas: {{ default 1 .Values.kraft.nodePool.replicas }}
+  resources:
+{{ toYaml .Values.kraft.nodePool.dualNode.resources | indent 4 }}
   roles:
     - controller
     - broker
@@ -46,6 +48,8 @@ metadata:
     {{- include "kafka.labels" . | nindent 4 }}
 spec:
   replicas: {{ coalesce .Values.kraft.nodePool.controllerReplicas .Values.kraft.nodePool.replicas 1 }}
+  resources:
+{{ toYaml .Values.kraft.nodePool.controller.resources | indent 4 }}
   roles:
     - controller
   storage:
@@ -77,6 +81,8 @@ metadata:
     {{- include "kafka.labels" . | nindent 4 }}
 spec:
   replicas: {{ coalesce .Values.kraft.nodePool.brokerReplicas .Values.kraft.nodePool.replicas 1 }}
+  resources:
+{{ toYaml .Values.kraft.nodePool.broker.resources | indent 4 }}
   roles:
     - broker
   storage:

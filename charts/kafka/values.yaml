@@ -51,6 +51,34 @@ kraft:
   nodePool:
     dualRoles: true
     replicas: 1
+    broker:
+      # CPU  and memory resources for Broker nodepools, ignored if dualRoles = true
+      resources: {}
+        # limits:
+        #   memory: 1Gi
+        # requests:
+        #   cpu: 1
+        #   memory: 1Gi
+    
+    controller:
+      # CPU  and memory resources for Controller nodepools, ignored if dualRoles = true
+      resources: {}
+        # limits:
+        #   memory: 1Gi
+        # requests:
+        #   cpu: 1
+        #   memory: 1Gi
+    
+    dualNode:
+      # CPU  and memory resources for DualRole nodepools, ignored if dualRoles = false
+      resources: {}
+        # limits:
+        #   memory: 1Gi
+        # requests:
+        #   cpu: 1
+        #   memory: 1Gi
+
+    storageSize: 100Gi
 
 nodeSelector: {}
 
