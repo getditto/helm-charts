@@ -28,20 +28,18 @@ strimzi:
   kafkaExporter:
     enabled: false
     resources: {}
-  externalListener:
-    enabled: false
 
   entityOperatorLabels: {}
 
   externalListener:
     enabled: false
-    # ingress class name
-    #ingressClass: <ingress-class>
-    #bootstrapHost: <cluster-name>-bootstrap.<domain>
-    #bootstrapAnnotations: 
-    #  external-dns.alpha.kubernetes.io/hostname: kafka-broker-1.mydomain.com.
-    #brokerNameTemplate: "<cluster-name>-broker-{{.brokerId}}.<domain>"
-    #brokerAnnotations:
+    ## ingress class name
+    # ingressClass: <ingress-class>
+    # bootstrapHost: <cluster-name>-bootstrap.<domain>
+    # bootstrapAnnotations:
+    ##  external-dns.alpha.kubernetes.io/hostname: kafka-broker-1.mydomain.com.
+    # brokerNameTemplate: "<cluster-name>-broker-{{.brokerId}}.<domain>"
+    # brokerAnnotations:
     #  external-dns.alpha.kubernetes.io/hostname: kafka-broker-1.mydomain.com.
 
 
@@ -59,7 +57,7 @@ kraft:
         # requests:
         #   cpu: 1
         #   memory: 1Gi
-    
+
     controller:
       # CPU  and memory resources for Controller nodepools, ignored if dualRoles = true
       resources: {}
@@ -68,7 +66,7 @@ kraft:
         # requests:
         #   cpu: 1
         #   memory: 1Gi
-    
+
     dualNode:
       # CPU  and memory resources for DualRole nodepools, ignored if dualRoles = false
       resources: {}
