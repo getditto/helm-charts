@@ -10,7 +10,7 @@ dependencies:
   version: 1.39.2-4b6e4e
 - name: hydra-subscription
   repository: oci://quay.io/ditto-external
-  version: 1.39.2-4b6e4e
+  version: 1.40.1
 - name: service-token-validator
   repository: oci://quay.io/ditto-external
   version: 0.2.1
@@ -32,5 +32,5 @@ dependencies:
 - name: kafka
   repository: https://getditto.github.io/helm-charts/
   version: 0.4.0
-digest: sha256:e6e98619c90c8fc94019f15da607903cdd70eec835cd8ba2597e8a4add41b87a
-generated: "2025-03-04T15:14:49.277798+13:00"
+digest: sha256:a8fe5a0ab8386e7b7ddab24d7379b2102f219f438cdfdd0bb77b39669d2438de
+generated: "2025-03-21T16:42:05.239999-04:00"
