@@ -50,6 +50,13 @@ spec:
                   description: Optional description of this source object
                   nullable: true
                   type: string
+                dialect:
+                  default: OQB
+                  description: "Version of the query language. At the moment of writing: DQL or OQB"
+                  enum:
+                    - OQB
+                    - DQL
+                  type: string
                 liveQueryCoreRef:
                   description: "Reference to the `LiveQueryCore` object of this source's [`RegistryApp`]"
                   nullable: true
@@ -96,6 +103,7 @@ spec:
                   type: object
                 queryFilterExpression:
                   description: Query filter expression to scope the data matching for the Live Query
+                  nullable: true
                   type: string
                 schema:
                   description: "Schema of CDC messages to be written in this source's data stream"
@@ -106,7 +114,6 @@ spec:
               required:
                 - appId
                 - output
-                - queryFilterExpression
                 - schema
               type: object
             status:
