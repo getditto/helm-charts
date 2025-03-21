@@ -36,7 +36,9 @@ metadata:
 spec:
   appId: {{ $appValues.id }}
   description: {{ $queryValues.description }}
+  {{- if $queryValues.collection }}
   collection: {{ $queryValues.collection }}
+  {{ end }}
   liveQueryCoreRef:
     name: {{ $appValues.id }}
     namespace: {{ .Release.Namespace }}
@@ -44,7 +46,7 @@ spec:
     kafka:
       cluster:
         name: {{ .Release.Name }}-live-query-kafka
-        namespace: {{ .Release.Namespace }} 
+        namespace: {{ .Release.Namespace }}
       topicName: {{ include "common.topics.name" (dict "id" $appValues.id "queryName" $queryValues.name) }}
   queryFilterExpression: {{ $queryValues.queryFilterExpression | quote }}
   schema: {{ $queryValues.schema }}
