@@ -15,13 +15,13 @@ home: https://docs.ditto.live/
 # This is the chart version. This version number should be incremented each time you make changes
 # to the chart and its templates, including the app version.
 # Versions are expected to follow Semantic Versioning (https://semver.org/)
-version: 0.3.0-alpha.2
+version: 0.4.0-alpha.1
 
 # This is the version number of the application being deployed. This version number should be
 # incremented each time you make changes to the application. Versions are not expected to
 # follow Semantic Versioning. They should reflect the version the application is using.
 # It is recommended to use it with quotes.
-appVersion: "1.39.2"
+appVersion: "1.41.0"
 keywords:
   - ditto
   - bigpeer
@@ -33,7 +33,7 @@ maintainers:
 dependencies:
   # Both longhorn and minio are used for storage, longhorn seems to be more robust
   - name: ditto-operator
-    version: "0.1.0"
+    version: "0.1.7"
     repository: "oci://quay.io/ditto-external"
     # repository: "file://../../../ditto/charts/operator"
     condition: ditto-operator.enabled

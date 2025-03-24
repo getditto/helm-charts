@@ -1,7 +1,7 @@
 dependencies:
 - name: ditto-operator
   repository: oci://quay.io/ditto-external
-  version: 0.1.0
+  version: 0.1.7
 - name: service-token-validator
   repository: oci://quay.io/ditto-external
   version: 0.2.1
@@ -23,5 +23,5 @@ dependencies:
 - name: kafka
   repository: https://getditto.github.io/helm-charts/
   version: 0.3.5
-digest: sha256:dc3b34380830ab4a9087ded2f0c8dad29072882c4e9e8c115a92790a71891f92
-generated: "2025-01-24T15:39:29.614634-05:00"
+digest: sha256:592e0422e227568c421cea7648c7b15d0422b0ee527eccfa9b1a7f5903220fca
+generated: "2025-03-24T15:35:20.735678-04:00"

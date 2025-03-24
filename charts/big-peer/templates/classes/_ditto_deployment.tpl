@@ -18,26 +18,68 @@ spec:
     hostname: {{ if (($values.network).hostname) }}{{ $values.network.hostname }}{{ else }}localhost{{ end }}
   auth:
     keys:
-      ca:
-        secretRef:
+      {{- if $values.pki.certIssuer }}
+      certManager:
+        template:
+          issuer:
+            metadata:
+              annotations: {}
+              labels: {}
+          caCertificate:
+            metadata:
+              annotations: {}
+              labels: {}
+            issuerRef:
+              group: cert-manager.io
+              kind: ClusterIssuer
+              name: {{ $values.pki.certIssuer }}
+            secretTemplate:
+              metadata:
+                annotations: {}
+                labels: {}
+          inBandCertificate:
+            metadata:
+              annotations: {}
+              labels: {}
+            issuerRef:
+              group: cert-manager.io
+              kind: ClusterIssuer
+              name: {{ $values.pki.certIssuer }}
+            secretTemplate:
+              metadata:
+                annotations: {}
+                labels: {}
+          jwtCertificate:
+            metadata:
+              annotations: {}
+              labels: {}
+            issuerRef:
+              group: cert-manager.io
+              kind: ClusterIssuer
+              name: {{ $values.pki.certIssuer }}
+            secretTemplate:
+              metadata:
+                annotations: {}
+                labels: {}
+      {{- else }}
+      external:
+        caSecretRef:
           name: {{ tpl $values.pki.device.secretName . }}
           certificate: tls.crt
           key: tls.key
           optional: true
-      inBand:
-        secretRef:
+        inBandSecretRef:
           name: {{ tpl $values.pki.inband.secretName . }}
           certificate: tls.crt
           key: tls.key
           optional: true
-      jwt:
-        secretRef:
+        jwtSecretRef:
           name: {{ tpl $values.pki.jwt.secretName . }}
           certificate: tls.crt
           key: tls.key
           optional: true
-    providers:
-      {{- toYaml $values.providers | nindent 6 }}
+      {{- end -}}
+      providers: {{ $values.providers }}
   api:
     image: {{ $values.image.namePrefix }}/big-peer-subscription:{{ $values.version }}
     imagePullPolicy: {{ $values.image.pullPolicy }}
@@ -87,7 +129,16 @@ spec:
     hashingScheme: ByDocumentId
   transactions:
     kafka:
-      bootstrapHost: {{ $values.transactions.kafka.bootstrapHost }}
+      {{ if $values.transactions.kafka.external.enabled }}
+      external:
+        topicName: {{ $values.transactions.kafka.external.topicName }}
+        bootstrapServers:
+        {{- toYaml $values.transactions.kafka.external.bootstrapServers | nindent 6 }}
+      {{ else }}
+      strimzi:
+        version: {{ $values.transactions.kafka.strimzi.version }}
+        replicas: {{ $values.transactions.kafka.strimzi.replicas }}
+      {{ end }}
 ---
 apiVersion: kafka.strimzi.io/v1beta2
 kind: KafkaTopic

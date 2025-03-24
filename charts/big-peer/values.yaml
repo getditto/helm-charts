@@ -72,14 +72,11 @@ ditto-deployment:
       bootstrapHost: ditto-bp-kafka-kafka-bootstrap.big-peer.svc.cluster.local:9092
   providers:
     dummyProvider:
-      type: tokenWebhook
-      webhookUrl: "http://dummy-auth-webhook/validate_token"
+      tokenWebhook:
+        url: "http://ditto-bp-dummy-auth-webhook/validate_token"
     internal:
-      type: tokenWebhook
-      webhookUrl: "http://ditto-bp-service-token-validator/v1.0/token-validation/ditto"
-    bpam:
-      type: tokenWebhook
-      webhookUrl: "http://ditto-bp-bpam/authorize"
+      tokenWebhook:
+        url: "http://ditto-bp-service-token-validator/v1.0/token-validation/ditto"
 
 ditto-operator:
   namespace: ""
@@ -142,6 +139,69 @@ ditto-operator:
 
     # -- Number of old ReplicaSets to retain for the Deployment before garbage collection occurs.
     revisionHistoryLimit: 10
+
+    # -- Auth config
+    auth:
+      providers:
+        dummyProvider:
+          tokenWebhook:
+            url: http://dummy-auth-webhook/validate_token
+
+    # -- Specify externally managed Kafka settings, telling Ditto Operator where to find Big Peer's Kafka cluster
+    transactions:
+      kafka:
+        external:
+          enabled: true
+          topicName: transaction.log
+          bootstrapServers:
+          - host: ditto-bp-kafka-kafka-bootstrap.big-peer.svc.cluster.local
+            port: 9092
+
+    # -- Specify small peer PKI / signers
+    # The default here is to use cert-manager to handle certificates
+    keys:
+      certManager:
+        template:
+          issuer:
+            metadata:
+              annotations: {}
+              labels: {}
+          caCertificate:
+            metadata:
+              annotations: {}
+              labels: {}
+            issuerRef:
+              group: cert-manager.io
+              kind: ClusterIssuer
+              name: example-cluster-issuer
+            secretTemplate:
+              metadata:
+                annotations: {}
+                labels: {}
+          inBandCertificate:
+            metadata:
+              annotations: {}
+              labels: {}
+            issuerRef:
+              group: cert-manager.io
+              kind: ClusterIssuer
+              name: example-cluster-issuer
+            secretTemplate:
+              metadata:
+                annotations: {}
+                labels: {}
+          jwtCertificate:
+            metadata:
+              annotations: {}
+              labels: {}
+            issuerRef:
+              group: cert-manager.io
+              kind: ClusterIssuer
+              name: example-cluster-issuer
+            secretTemplate:
+              metadata:
+                annotations: {}
+                labels: {}
 
     # -- Resources to provide to the operator controller pod.
     #
