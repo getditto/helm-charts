@@ -78,8 +78,11 @@ spec:
           certificate: tls.crt
           key: tls.key
           optional: true
-      {{- end -}}
-      providers: {{ $values.providers }}
+      {{- end }}
+    providers:
+    {{- range $key, $value := $values.providers }}
+    {{ $key }}:
+    {{- end }}
   api:
     image: {{ $values.image.namePrefix }}/big-peer-subscription:{{ $values.version }}
     imagePullPolicy: {{ $values.image.pullPolicy }}
@@ -133,7 +136,10 @@ spec:
       external:
         topicName: {{ $values.transactions.kafka.external.topicName }}
         bootstrapServers:
-        {{- toYaml $values.transactions.kafka.external.bootstrapServers | nindent 6 }}
+        {{- range $provider := $values.transactions.kafka.external.bootstrapServers }}
+         - host: {{ $provider.host }}
+           port: {{ $provider.port }}
+        {{- end }}
       {{ else }}
       strimzi:
         version: {{ $values.transactions.kafka.strimzi.version }}
