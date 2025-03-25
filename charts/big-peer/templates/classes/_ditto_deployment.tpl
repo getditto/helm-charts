@@ -81,7 +81,8 @@ spec:
       {{- end }}
     providers:
     {{- range $key, $value := $values.providers }}
-    {{ $key }}:
+      {{ $key }}:
+        {{- toYaml $value | nindent 8 }}
     {{- end }}
   api:
     image: {{ $values.image.namePrefix }}/big-peer-subscription:{{ $values.version }}
@@ -151,7 +152,7 @@ kind: KafkaTopic
 metadata:
   name: {{ $values.transactions.kafka.topic.name }}
   labels:
-    strimzi.io/cluster: {{ tpl .Release.Name . }}-kafka
+    strimzi.io/cluster: {{ $values.transactions.kafka.external.clusterName }}
 spec:
   partitions: {{ $values.transactions.kafka.topic.partitions }}
   replicas: {{ $values.transactions.kafka.topic.replicas }}
