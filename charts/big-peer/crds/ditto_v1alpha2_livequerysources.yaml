@@ -101,6 +101,11 @@ spec:
                         - topicName
                       type: object
                   type: object
+                partitions:
+                  description: Kafka partitioning of the source topic
+                  format: int64
+                  nullable: true
+                  type: integer
                 queryFilterExpression:
                   description: Query filter expression to scope the data matching for the Live Query
                   nullable: true
