@@ -102,7 +102,9 @@ spec:
       replica.selector.class: org.apache.kafka.common.replica.RackAwareReplicaSelector
 {{- end }}
       {{- if .Values.strimzi.additionalConfig }}
-      {{ toYaml .Values.strimzi.additionalConfig | indent 6 }}
+      {{ range $key, $val := .Values.strimzi.additionalConfig }}
+      {{ $key }}: {{ $val | quote }}
+      {{- end }}
       {{- end }}
     resources:
 {{ toYaml .Values.strimzi.resources | indent 6 }}
