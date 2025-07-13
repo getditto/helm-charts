@@ -44,6 +44,10 @@
         "replicationFactor": {
           "type": "integer"
         },
+        "additionalConfig": {
+          "type": "object",
+          "description": "Additional Kafka configuration properties"
+        },
         "resources": {
           "type": "object"
         },

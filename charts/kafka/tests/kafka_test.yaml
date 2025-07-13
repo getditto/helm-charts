@@ -54,3 +54,13 @@ tests:
       - equal:
           path: metadata.annotations["argocd/sync-wave"]
           value: 3
+
+  - it: should add additional config
+    set:
+      strimzi:
+        additionalConfig:
+          message.max.bytes: "104857600" # 100MiB
+    asserts:
+      - equal:
+          path: spec.kafka.config["message.max.bytes"]
+          value: "104857600"
