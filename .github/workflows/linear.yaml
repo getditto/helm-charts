@@ -1,0 +1,32 @@
+name: Linear automation
+
+on:
+  pull_request:
+    branches: [ "main" ]
+    types: [ "opened", "synchronize", "reopened", "edited" ]
+  check_run:
+
+permissions:
+  pull-requests: write
+  contents: read
+
+jobs:
+  linear-checks:
+    runs-on: ubuntu-latest
+    name: Linear workflow
+
+    steps:
+      - name: Verify Linked Issue
+        uses: ZetaMinusOne/verify-linked-linear-issue-action@main
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Add SRE reviewers
+        uses: spkane/gha-add-linear-author-as-reviewer@handle-missing-mapping
+        with:
+           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+           LINEAR_ISSUE_REGEX: "(?:SRE|SRESUP|DEP)-\\d+"
+           EMAIL_MAPPING: ${{ vars.EMAIL_GITHUB_MAPPING }}
+           # user1@example.com github-user-login-1
+           DEFAULT_REVIEWER: "spkane,hposca,marcelosre,s3than"
