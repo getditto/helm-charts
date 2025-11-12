@@ -16,11 +16,6 @@ jobs:
     name: Linear workflow
 
     steps:
-      - name: Verify Linked Issue
-        uses: ZetaMinusOne/verify-linked-linear-issue-action@main
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
       - name: Add SRE reviewers
         uses: spkane/gha-add-linear-author-as-reviewer@handle-missing-mapping
         with:
